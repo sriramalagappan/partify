@@ -12,10 +12,6 @@ const AuthScreenContainer = props => (
                 title={"Login to Spotify"}
                 style={styles.button}
             />
-            <CustomButton
-                onPress={props.test}
-                title={"test"}
-            />
         </View>
     </View>
 )

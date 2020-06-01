@@ -24,9 +24,6 @@ import MainNavigator from './navigation/MainNavigator'
 // reducer imports
 import userReducer from './store/reducers/user'
 
-// TODO: Delete later and use Main Navigator
-import AuthScreen from './screens/AuthScreen/AuthScreen'
-
 // disable error warnings while in development
 console.disableYellowBox = true;
 
@@ -60,7 +57,7 @@ export default function App() {
   }
   return (
     <Provider store={store}>
-      <AuthScreen />
+      <MainNavigator />
     </Provider>
   );
 }

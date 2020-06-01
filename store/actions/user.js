@@ -3,6 +3,9 @@
  * Manages personal user information from spotify
 */
 
+import getUserData from '../../misc/getUserData'
+import checkToken from '../../authentication/spotify_check'
+
 export const INIT_USER = 'INIT_USER'
 export const LOGOUT_USER = 'LOG_OUT_USER'
 
@@ -18,10 +21,28 @@ export const logoutUser = () => {
 
 /** 
  * Initialize the user with information provided from Spotify's API
- * @param {string} userID The Spotify user ID for this user
- * @param {string} display_name The name displayed on the user profile. Null if not available
- * @param {Object} followers Object containing info of the user's Spotify followers
- */ 
-export const initUser = (userID, display_name, followers) => {
-    return { type: INIT_USER, userID, display_name, followers}
+ *
+ * userID: The Spotify user ID for this user
+ * 
+ * display_name: The name displayed on the user profile. Null if not available
+ * 
+ * followers: Object containing info of the user's Spotify followers
+ */
+export const initUser = () => {
+    return async dispatch => {
+        try {
+            await checkToken()
+            const accessToken = await getUserData('accessToken')
+            const auth = 'Bearer ' + accessToken
+            const response = await fetch('https://api.spotify.com/v1/me', {
+                headers: {
+                    'Authorization': auth,
+                },
+            });
+            const resData = await response.json()
+            dispatch({ type: INIT_USER, userID: resData.id, display_name: resData.display_name, followers: resData.followers })
+        } catch (err) {
+            console.error(err);
+        }
+    }
 }
