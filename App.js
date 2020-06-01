@@ -1,19 +1,63 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+/**********************************************************************;
+* Project           : Partify
+*
+* Author            : Sriram V Alagappan
+*
+* Date created      : 05/31/2020
+*
+* Purpose           : Mobile application on IOS and Android that allows 
+*                     users to create private rooms and create a shared 
+*                     playlist together. The playlist is outputted on a 
+*                     designated host phone can be updated in real-time 
+*                     by anyone (for use in a party or gathering) 
+*
+***********************************************************************/
+
+import React, { useState, useEffect } from 'react';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import ReduxThunk from 'redux-thunk'
+import MainNavigator from './navigation/MainNavigator'
+
+// TODO: Delete later and use Main Navigator
+import AuthScreen from './screens/AuthScreen/AuthScreen'
+
+// disable error warnings while in development
+console.disableYellowBox = true;
+
+// const rootReducer = combineReducers({
+// })
+
+// const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
+
+// fetch fonts from the assets folder
+const fetchFonts = () => {
+  return Font.loadAsync({
+    'regular': require('./assets/fonts/regular.ttf'),
+    'bold': require('./assets/fonts/bold.ttf'),
+    'medium': require('./assets/fonts/medium.ttf'),
+  });
+};
 
 export default function App() {
+  const [fontLoaded, setFontLoaded] = useState(false)
+
+  if (!fontLoaded) {
+    return (
+      <AppLoading
+        startAsync={fetchFonts}
+        onFinish={() => {
+          setFontLoaded(true);
+        }}
+      />
+    );
+  }
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+    <AuthScreen />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+{/* <Provider store={store}>
+  <MainNavigator />
+</Provider> */}
