@@ -13,7 +13,7 @@
 *
 ***********************************************************************/
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { AppLoading } from 'expo';
@@ -21,16 +21,20 @@ import * as Font from 'expo-font';
 import ReduxThunk from 'redux-thunk'
 import MainNavigator from './navigation/MainNavigator'
 
+// reducer imports
+import userReducer from './store/reducers/user'
+
 // TODO: Delete later and use Main Navigator
 import AuthScreen from './screens/AuthScreen/AuthScreen'
 
 // disable error warnings while in development
 console.disableYellowBox = true;
 
-// const rootReducer = combineReducers({
-// })
+const rootReducer = combineReducers({
+  user: userReducer,
+})
 
-// const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
+const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
 
 // fetch fonts from the assets folder
 const fetchFonts = () => {
@@ -55,9 +59,8 @@ export default function App() {
     );
   }
   return (
-    <AuthScreen />
+    <Provider store={store}>
+      <AuthScreen />
+    </Provider>
   );
 }
-{/* <Provider store={store}>
-  <MainNavigator />
-</Provider> */}

@@ -7,7 +7,7 @@ const StartupScreenContainter = props => (
     <View style={styles.screen}>
         <ActivityIndicator
             size='large'
-            color='black'
+            color='white'
         />
     </View>
 )

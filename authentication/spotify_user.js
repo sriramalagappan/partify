@@ -1,5 +1,6 @@
-import setUserData from '../misc/setUserData'
 import getUserData from '../misc/getUserData'
+import * as userActions from '../store/actions/user'
+import { useDispatch } from 'react-redux'
 
 const getUser = async () => {
   try {
@@ -11,6 +12,7 @@ const getUser = async () => {
       },
     });
     const resData = await response.json()
+    useDispatch(userActions.initUser(resData.id, resData.display_name, resData.followers))
   } catch (err) {
     console.error(err);
   }
