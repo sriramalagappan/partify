@@ -1,3 +1,4 @@
+import { Platform } from 'react-native'
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
@@ -7,6 +8,22 @@ import StartupScreen from '../screens/StartupScreen/StartupScreen'
 import AuthScreen from '../screens/AuthScreen/AuthScreen'
 import HomeScreen from '../screens/HomeScreen/HomeScreen'
 
+import device from '../misc/device'
+
+const defaultNavOptions = {
+    headerTintColor: 'white',
+    headerTitleStyle: {
+        fontFamily: 'bold',
+        fontWeight: '200',
+        marginTop: (Platform.OS === 'android' || device()) ? 30 : 20,
+        fontSize: 20,
+    },
+    headerStyle: {
+        backgroundColor: 'black',
+        height: (Platform.OS === 'android' || device()) ? 75 : 65,
+    },
+    safeAreaInsets: {top: 0 , bottom: 0},
+};
 
 // // Create Stack navigator for home screen
 // const HomeNavigator = createStackNavigator(
@@ -15,7 +32,6 @@ import HomeScreen from '../screens/HomeScreen/HomeScreen'
 //     },
 //     {
 //         defaultNavigationOptions: defaultNavOptions,
-//         headerMode:'none'
 //     }
 // )
 
@@ -33,21 +49,23 @@ const MainNavigator = createStackNavigator(
         Startup: StartupScreen,
         Auth: {
             name: 'Auth', screen: AuthScreen, navigationOptions: {
-                gesturesEnabled: false,
+                gestureEnabled: false,
             },
         },
         Home: {
             name: 'Home', screen: HomeScreen, navigationOptions: {
-                gesturesEnabled: false,
+                gestureEnabled: false,
             },
         }
     },
     {
-        cardStyle: {
-            opacity: 1,
-        },
         headerMode: 'none',
         initialRouteName: 'Startup',
+        navigationOptions: {
+            cardStyle: {
+                opacity: 1,
+            },
+        }
     }
 )
 

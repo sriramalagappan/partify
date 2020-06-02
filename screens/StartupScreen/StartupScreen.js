@@ -3,6 +3,7 @@ import StartupScreenUI from './StartupScreenUI'
 import { useDispatch, useSelector } from 'react-redux'
 import getUserData from '../../misc/getUserData'
 import * as userActions from '../../store/actions/user'
+import FirebaseAuth from '../../authentication/firebase_auth'
 
 const StartupScreen = props => {
 
@@ -14,7 +15,7 @@ const StartupScreen = props => {
     // route to home screen (done when user data is initalized)
     useEffect(() => {
         if (userID) {
-            props.navigation.navigate('Home')
+            props.navigation.replace('Home')
         }
     }, [userID])
 
@@ -28,6 +29,7 @@ const StartupScreen = props => {
                 props.navigation.navigate('Auth')
             } else {
                 // get user data
+                FirebaseAuth.shared = new FirebaseAuth()
                 dispatch(userActions.initUser())
             }
         }

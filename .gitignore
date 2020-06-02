@@ -10,6 +10,7 @@ npm-debug.*
 web-build/
 web-report/
 misc/secrets.js
+authentication/firebase_auth.js
 
 # macOS
 .DS_Store

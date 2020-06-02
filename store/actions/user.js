@@ -35,6 +35,7 @@ export const initUser = () => {
             const accessToken = await getUserData('accessToken')
             const auth = 'Bearer ' + accessToken
             const response = await fetch('https://api.spotify.com/v1/me', {
+                method: 'GET',
                 headers: {
                     'Authorization': auth,
                 },

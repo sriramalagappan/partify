@@ -4,19 +4,19 @@ import AuthScreenUI from './AuthScreenUI'
 import getAuthorizationCode from '../../authentication/spotify_auth'
 import getTokens from '../../authentication/spotify_token'
 import * as userActions from '../../store/actions/user'
+import FirebaseAuth from '../../authentication/firebase_auth'
 
 const AuthScreen = props => {
 
     // Redux Store State Variables
     const userID = useSelector(state => state.user.userID)
-    console.log(userID)
 
     const dispatch = useDispatch()
 
     // route to home screen (done when user data is initalized)
     useEffect(() => {
         if (userID) {
-            props.navigation.navigate('Home')
+            props.navigation.replace('Home')
         }
     }, [userID])
 
@@ -27,6 +27,7 @@ const AuthScreen = props => {
             try {
                 await getTokens(authCode)
                 dispatch(userActions.initUser())
+                FirebaseAuth.shared = new FirebaseAuth()
             } catch (err) {
                 console.log(err.message)
             }
@@ -39,11 +40,5 @@ const AuthScreen = props => {
         />
     )
 }
-
-// AuthScreen.navigationOptions = navData => {
-//     return {
-//         headerTitle: 'Login',
-//     }
-// }
 
 export default AuthScreen
