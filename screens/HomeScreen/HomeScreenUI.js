@@ -18,7 +18,7 @@ const HomeScreenUI = props => (
                     inputStyle={styles.inputText}
                 />
                 <Text style={styles.header}>Current Rooms</Text>
-                <Text style={styles.caption}>You are currently not in any rooms. Join one or create your own!</Text>
+                <Text style={styles.caption}>You are currently not in any room. Join one or create your own!</Text>
             </View>
             <View style={styles.buttonsContainer}>
                 <CustomButton

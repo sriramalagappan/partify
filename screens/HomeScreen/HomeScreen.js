@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { AsyncStorage } from 'react-native'
-import HeaderButton from '../../components/HeaderButton'
-import { HeaderButtons, Item } from 'react-navigation-header-buttons'
+import { Alert, AsyncStorage } from 'react-native'
 import HomeScreenUI from './HomeScreenUI'
 import { useDispatch, useSelector } from 'react-redux'
-import getUserData from '../../misc/getUserData'
 import * as userActions from '../../store/actions/user'
 import firebase from 'firebase';
 
@@ -36,8 +33,16 @@ const HomeScreen = props => {
         // Delete state data
         dispatch(userActions.logoutUser())
 
+        const user = firebase.auth().currentUser
+
         // logout user from firebase
         await firebase.auth().signOut()
+
+        // delete user from firebase
+        user.delete().then(() => {
+        }).catch((err) => {
+            Alert.alert('An Error Occurred', 'Please try again or restart the app', [{ text: 'Okay' }])
+        })
 
         // route to auth
         props.navigation.replace('Auth')

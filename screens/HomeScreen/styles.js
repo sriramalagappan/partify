@@ -53,7 +53,9 @@ export default StyleSheet.create({
 
     searchBar: {
         width: '90%',
-        backgroundColor: 'black',
+        backgroundColor: 'transparent',
+        borderTopWidth: 0,
+        borderBottomWidth: 0,
         marginTop: (height / 30)
     },
 
