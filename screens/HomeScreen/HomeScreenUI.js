@@ -16,6 +16,8 @@ const HomeScreenUI = props => (
                     lightTheme={false}
                     round={true}
                     inputStyle={styles.inputText}
+                    showLoading={props.isLoading}
+                    onSubmitEditing={props.joinRoomHandler}
                 />
                 <Text style={styles.header}>Current Rooms</Text>
                 <Text style={styles.caption}>You are currently not in any room. Join one or create your own!</Text>

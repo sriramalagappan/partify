@@ -38,6 +38,13 @@ const CreateRoomScreen = props => {
         init()
     }, [])
 
+    // If roomID exists, replace screen with home screen
+    useEffect(() => {
+        if(roomID) {
+            props.navigation.replace('Host')
+        }
+    }, [roomID])
+
     // Input handler functions
     const roomNameHandler = input => {
         setRoomName(input)

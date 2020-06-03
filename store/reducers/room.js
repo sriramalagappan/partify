@@ -4,6 +4,9 @@ const initialState = {
     roomID: null,
     roomName: '',
     device: null,
+    uid: null,
+    playlistID: null,
+    userType: '',
 }
 
 const roomReducer = (state = initialState, action) => {
@@ -12,7 +15,10 @@ const roomReducer = (state = initialState, action) => {
             return {
                 roomName: action.roomName,
                 device: action.device,
-                roomID: action.roomID
+                roomID: action.roomID,
+                uid: action.uid,
+                playlistID: action.playlistID,
+                userType: action.userType
             }
         }
         case RESET_ROOM: {

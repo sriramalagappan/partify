@@ -51,7 +51,8 @@ export const initRoom = (roomName, password, device, userID) => {
                     password,
                     device,
                     uri: playlistResData.uri,
-                    playlistID: playlistResData.id
+                    playlistID: playlistResData.id,
+                    hostID: userID
                 })
             })
 
@@ -61,8 +62,44 @@ export const initRoom = (roomName, password, device, userID) => {
                 type: INIT_ROOM,
                 roomName,
                 device,
-                roomID: resData.name
+                roomID: resData.name,
+                uri: playlistResData.uri,
+                playlistID: playlistResData.id,
+                userType: 'host',
             })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+}
+
+export const joinRoom = (roomName, userID) => {
+    return async dispatch => {
+        try {
+            const fbToken = await getUserData('fb_accessToken')
+            const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms.json?auth=${fbToken}`)
+            const roomData = await rooms.json()
+
+            //TODO
+            let userType = 'admin';
+
+            for (const key in roomData) {
+                if(roomData[key].roomName === roomName) {
+                    if (roomData[key].hostID === userID) {  
+                        userType = 'host'
+                    }
+
+                    dispatch({
+                        type: INIT_ROOM,
+                        roomName,
+                        device: roomData[key].device,
+                        roomID: key,
+                        uri: roomData[key].uri,
+                        playlistID: roomData[key].playlistID,
+                        userType,
+                    })
+                }
+            }
         } catch (err) {
             console.log(err)
         }

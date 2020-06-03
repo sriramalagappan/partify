@@ -8,6 +8,7 @@ import StartupScreen from '../screens/StartupScreen/StartupScreen'
 import AuthScreen from '../screens/AuthScreen/AuthScreen'
 import HomeScreen from '../screens/HomeScreen/HomeScreen'
 import CreateRoomScreen from '../screens/CreateRoomScreen/CreateRoomScreen'
+import HostPlayerScreen from '../screens/HostPlayerScreen/HostPlayerScreen'
 
 import device from '../misc/device'
 
@@ -59,6 +60,7 @@ const MainNavigator = createStackNavigator(
             },
         },
         Create: CreateRoomScreen,
+        Host: HostPlayerScreen,
     },
     {
         headerMode: 'none',
