@@ -24,7 +24,7 @@ const HomeScreenUI = props => (
                 <CustomButton
                     title={'Create a Room'}
                     style={styles.createButton}
-                    onPress={() => { }}
+                    onPress={props.createRoomHandler}
                     textStyle={styles.createText}
                 />
                 <CustomButton

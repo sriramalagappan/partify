@@ -21,6 +21,11 @@ const HomeScreen = props => {
         setRoomName(input)
     }
 
+    // navigate user to create room screen when button is pressed
+    const createRoomHandler = () => {
+        props.navigation.navigate('Create')
+    }
+
     // Delete all data in async storage, delete state data, logout user from firebase, and route to auth screen
     const logoutHandler = async () => {
         // Delete async data
@@ -59,6 +64,7 @@ const HomeScreen = props => {
             roomName={roomName}
             searchInputHandler={searchInputHandler}
             logoutHandler={logoutHandler}
+            createRoomHandler={createRoomHandler}
         />
     )
 }

@@ -1,11 +1,11 @@
-import fb_secrets from '../misc/firebase_secrets'
+import fbConfig from '../constants/firebaseConfig'
 import getUserData from '../misc/getUserData'
 import setUserData from '../misc/setUserData'
 
 const refreshTokensFirebase = async () => {
     try {
         const refreshToken = await getUserData('fb_refreshToken')
-        const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${fb_secrets.api}`, {
+        const response = await fetch(`https://securetoken.googleapis.com/v1/token?key=${fbConfig.apiKey}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

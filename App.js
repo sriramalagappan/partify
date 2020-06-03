@@ -23,12 +23,16 @@ import MainNavigator from './navigation/MainNavigator'
 
 // reducer imports
 import userReducer from './store/reducers/user'
+import deviceReducer from './store/reducers/devices'
+import roomReducer from './store/reducers/room';
 
 // disable error warnings while in development
 console.disableYellowBox = true;
 
 const rootReducer = combineReducers({
   user: userReducer,
+  devices: deviceReducer,
+  room: roomReducer,
 })
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk))

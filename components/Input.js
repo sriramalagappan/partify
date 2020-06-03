@@ -20,8 +20,14 @@ const Input = props => {
                     selectionColor={'black'}
                     onFocus={() => setHighlight(true)}
                     onBlur={() => setHighlight(false)}
+                    placeholder={props.placeholder}
+                    placeholderTextColor={'#aeb5bf'}
+                    maxLength={props.maxLength}
+                    selectionColor={'#aeb5bf'}
+                    secureTextEntry={props.isPassword}
                 />
             </View>
+            <Text style={{...styles.errorText, ...props.errorTextStyle}} numberOfLines={1}>{props.error}</Text>
         </View>
     )
 }
@@ -30,7 +36,8 @@ const styles = StyleSheet.create({
     container: {
         width: '80%',
         height: 60,
-        margin: 15,
+        marginHorizontal: 15,
+        marginVertical: 10,
     },
 
     title: {
@@ -40,25 +47,28 @@ const styles = StyleSheet.create({
 
     inputContainer: {
         height: 40,
-        borderColor: 'black',
-        borderRadius: 10,
-        borderWidth: 2,
+        borderColor: '#3b3b3b',
+        borderBottomWidth: 2,
     },
 
     inputContainerHighlight: {
         height: 40,
         borderColor: colors.primary,
-        borderRadius: 10,
-        borderWidth: 2,
+        borderBottomWidth: 2,
     },
 
     input: {
-        marginLeft: 5,
-        marginRight: 4,
-        paddingBottom: 4.8,
         height: 40,
         fontFamily: 'regular',
-        fontSize: 20
+        fontSize: 20,
+        color: '#a8a8a8'
+    },
+
+    errorText: {
+        color: 'red',
+        fontSize: 15,
+        fontFamily: 'medium',
+        marginTop: 5,
     }
 })
 

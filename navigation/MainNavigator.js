@@ -7,6 +7,7 @@ import { Entypo } from '@expo/vector-icons'
 import StartupScreen from '../screens/StartupScreen/StartupScreen'
 import AuthScreen from '../screens/AuthScreen/AuthScreen'
 import HomeScreen from '../screens/HomeScreen/HomeScreen'
+import CreateRoomScreen from '../screens/CreateRoomScreen/CreateRoomScreen'
 
 import device from '../misc/device'
 
@@ -56,7 +57,8 @@ const MainNavigator = createStackNavigator(
             name: 'Home', screen: HomeScreen, navigationOptions: {
                 gestureEnabled: false,
             },
-        }
+        },
+        Create: CreateRoomScreen,
     },
     {
         headerMode: 'none',
