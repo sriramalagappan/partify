@@ -2,6 +2,8 @@ import React from 'react'
 import { View, Text, Easing } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import TextTicker from 'react-native-text-ticker'
+import AddButton from '../../components/AddButton'
+import Song from '../../components/Song'
 
 import styles from './styles'
 
@@ -21,14 +23,24 @@ const HostPlayerScreenUI = props => {
             />
             <TextTicker
                 style={styles.scrollingText}
-                duration={15000}
+                duration={20000}
                 loop
-                bounce
                 repeatSpacer={50}
-                easing={Easing.inOut(Easing.ease)}
+                easing={Easing.linear}
             >
-                You have no songs. To add a song and get started, click the add button below
+                You have no songs. To get started, add a song by clicking the plus button below
             </TextTicker>
+            <Song 
+                name={props.playingName}
+                author={props.playingArtist}
+                imageUri={props.playingImageUri}
+            />
+            <Text style={styles.header}>Queue</Text>
+            <View style={styles.buttonContainer}>
+                <AddButton 
+                    onPress={props.addSongHandler}
+                />
+            </View>
         </View>
     )
 }

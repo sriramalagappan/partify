@@ -9,8 +9,10 @@ import AuthScreen from '../screens/AuthScreen/AuthScreen'
 import HomeScreen from '../screens/HomeScreen/HomeScreen'
 import CreateRoomScreen from '../screens/CreateRoomScreen/CreateRoomScreen'
 import HostPlayerScreen from '../screens/HostPlayerScreen/HostPlayerScreen'
+import AddScreen from '../screens/AddSongScreen/AddSongScreen'
 
 import device from '../misc/device'
+import AddSongScreen from '../screens/AddSongScreen/AddSongScreen'
 
 const defaultNavOptions = {
     headerTintColor: 'white',
@@ -61,6 +63,7 @@ const MainNavigator = createStackNavigator(
         },
         Create: CreateRoomScreen,
         Host: HostPlayerScreen,
+        Add: AddSongScreen,
     },
     {
         headerMode: 'none',

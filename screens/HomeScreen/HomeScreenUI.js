@@ -20,7 +20,7 @@ const HomeScreenUI = props => (
             />
             <View style={styles.searchContainer}>
                 <SearchBar
-                    placeholder={'Search for a room'}
+                    placeholder={'Search for a room...'}
                     onChangeText={props.searchInputHandler}
                     value={props.roomName}
                     containerStyle={styles.searchBar}
