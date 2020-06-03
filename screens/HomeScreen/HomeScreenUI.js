@@ -3,10 +3,21 @@ import { View, Text, Keyboard, TouchableWithoutFeedback, ScrollView } from 'reac
 import styles from './styles'
 import CustomButton from '../../components/CustomButton'
 import { SearchBar } from 'react-native-elements'
+import { LinearGradient } from 'expo-linear-gradient';
 
 const HomeScreenUI = props => (
     <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>
         <ScrollView style={{ backgroundColor: 'black' }} contentContainerStyle={styles.screen}>
+            <LinearGradient
+                colors={['rgba(100,100,100,0.8)', 'transparent']}
+                style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    height: 200,
+                }}
+            />
             <View style={styles.searchContainer}>
                 <SearchBar
                     placeholder={'Search for a room'}
