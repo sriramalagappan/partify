@@ -15,6 +15,7 @@ const AddSongScreenUI = props => {
             author={artistBuilder(itemData.item.artists)}
             imageUri={itemData.item.album.images[1].url}
             onPress={() => { props.addSongHandler(itemData.item.uri) }}
+            isExplicit={itemData.item.explicit}
         />
     )
 

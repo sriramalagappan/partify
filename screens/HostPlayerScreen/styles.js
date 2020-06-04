@@ -18,7 +18,8 @@ export default StyleSheet.create({
     },
 
     buttonContainer: {
-        marginTop: 50,
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     },
 
     header: {
@@ -32,7 +33,21 @@ export default StyleSheet.create({
 
     listContainer: {
         height: '45%',
+    },
+
+    div: {
+        width: '80%',
         borderBottomColor: 'white',
         borderBottomWidth: 3,
-    }
+    },
+
+    player: {
+        width: '80%',
+        height: '20%',
+        justifyContent: 'center',
+    },
+
+    playButton: {
+        backgroundColor: 'black',
+    },
 })
