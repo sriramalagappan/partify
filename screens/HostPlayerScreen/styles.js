@@ -27,6 +27,12 @@ export default StyleSheet.create({
         fontFamily: 'bold',
         textAlign: 'left',
         width: '80%',
-        marginTop: 30,
+        marginTop: 25,
+    },
+
+    listContainer: {
+        height: '45%',
+        borderBottomColor: 'white',
+        borderBottomWidth: 3,
     }
 })

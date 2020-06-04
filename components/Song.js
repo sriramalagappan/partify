@@ -30,11 +30,12 @@ const Song = props => {
         </View>
     )
 
+    // Determine whether the use can interact with the element given their status in the room
     if (props.isQueue && props.elevatedUser) {
         return (
             <Swipeable
                 renderRightActions={RightAction}
-                onSwipeableRightOpen={() => console.log('hi')}
+                onSwipeableRightOpen={props.onSwipeRight}
             >
                 {SongComopnent}
             </Swipeable>
@@ -59,8 +60,8 @@ const styles = StyleSheet.create({
 
     queueContainer: {
         height: 60,
-        backgroundColor: '#494c52',
-        marginTop: 20,
+        backgroundColor: '#222222',
+        marginTop: 5,
         flexDirection: 'row',
         borderRadius: 5,
     },
@@ -98,11 +99,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 60,
         backgroundColor: 'red',
-        marginTop: 20,
         flexDirection: 'row',
         borderRadius: 5,
         alignItems: 'center',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        marginTop: 5,
     },
 
     actionText: {

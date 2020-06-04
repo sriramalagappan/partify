@@ -1,13 +1,25 @@
 import React from 'react'
-import { View, Text, Easing } from 'react-native'
+import { View, Text, Easing, FlatList } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient';
 import TextTicker from 'react-native-text-ticker'
 import AddButton from '../../components/AddButton'
 import Song from '../../components/Song'
+import artistBuidler from '../../misc/artistBuilder'
 
 import styles from './styles'
 
 const HostPlayerScreenUI = props => {
+
+    const queueTrackRenderer = (itemData) => (
+        <Song
+            name={itemData.item.track.name}
+            author={artistBuidler(itemData.item.track.artists)}
+            imageUri={itemData.item.track.album.images[1].url}
+            isQueue
+            elevatedUser
+            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri, props.queueTracks.indexOf(itemData.item)) }}
+        />
+    )
 
     return (
         <View style={styles.screen}>
@@ -23,21 +35,36 @@ const HostPlayerScreenUI = props => {
             />
             <TextTicker
                 style={styles.scrollingText}
-                duration={20000}
+                duration={props.message.length * 300}
                 loop
                 repeatSpacer={50}
                 easing={Easing.linear}
             >
-                You have no songs. To get started, add a song by clicking the plus button below
+                {props.message}
             </TextTicker>
-            <Song 
-                name={props.playingName}
-                author={props.playingArtist}
-                imageUri={props.playingImageUri}
-            />
+            {(props.currentTrack) ? (
+                <Song
+                    name={(props.currentTrack.track.name)}
+                    author={artistBuidler(props.currentTrack.track.artists)}
+                    imageUri={props.currentTrack.track.album.images[1].url}
+                />
+            ) : (
+                    <Song
+
+                    />
+                )
+            }
             <Text style={styles.header}>Queue</Text>
+            <View style={styles.listContainer}>
+                <FlatList
+                    keyExtractor={(item) => item.track.id + props.queueTracks.indexOf(item)}
+                    data={props.queueTracks}
+                    renderItem={queueTrackRenderer}
+                    numColumns={1}
+                />
+            </View>
             <View style={styles.buttonContainer}>
-                <AddButton 
+                <AddButton
                     onPress={props.addSongHandler}
                 />
             </View>

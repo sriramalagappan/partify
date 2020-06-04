@@ -1,4 +1,4 @@
-import { PLAYLIST_SONGS, RESET_SONGS, SEARCH } from '../actions/songs'
+import { PLAYLIST_SONGS, RESET_SONGS, SEARCH, KEEP } from '../actions/songs'
 
 const initialState = {
     tracks: null,
@@ -19,11 +19,11 @@ const deviceReducer = (state = initialState, action) => {
                 searchResults: action.search
             }
         }
-        case RESET_SONGS: {
-            return initialState
-        }
         default: {
             return state
+        }
+        case RESET_SONGS: {
+            return initialState
         }
     }
 }

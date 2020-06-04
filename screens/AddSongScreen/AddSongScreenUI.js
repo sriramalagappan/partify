@@ -5,29 +5,19 @@ import { SearchBar } from 'react-native-elements'
 import TouchableSong from '../../components/TouchableSong'
 
 import styles from './styles'
+import artistBuilder from '../../misc/artistBuilder';
 
 const AddSongScreenUI = props => {
 
-    const renderSong = (itemData) => {
-        // build string of artists
-        let artists;
-        let i;
-        for (i = 0; i < itemData.item.artists.length; i++) {
-            if (i === 0) {
-                artists = itemData.item.artists[i].name
-            } else {
-                artists += ', ' + itemData.item.artists[i].name
-            }
-        }
+    const renderSong = (itemData) => (
+        <TouchableSong
+            name={itemData.item.name}
+            author={artistBuilder(itemData.item.artists)}
+            imageUri={itemData.item.album.images[1].url}
+            onPress={() => { props.addSongHandler(itemData.item.uri) }}
+        />
+    )
 
-        return (
-            <TouchableSong
-                name={itemData.item.name}
-                author={artists}
-                imageUri={itemData.item.album.images[1].url}
-            />
-        )
-    }
 
     return (
         <TouchableWithoutFeedback onPress={() => { Keyboard.dismiss() }}>

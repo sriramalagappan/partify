@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import AddSongScreenUI from './AddSongScreenUI'
 import * as songActions from '../../store/actions/songs'
+import { Alert } from 'react-native'
 
 
 const AddSongScreen = props => {
@@ -13,6 +14,7 @@ const AddSongScreen = props => {
 
     // Redux Store State Variables
     const searchResults = useSelector(state => state.songs.searchResults)
+    const playlistID = useSelector(state => state.room.playlistID)
 
     const dispatch = useDispatch()
 
@@ -39,12 +41,27 @@ const AddSongScreen = props => {
         }
     }
 
+    // add song and send alert that routes user back if successful
+    const addSongHandler = async (songID) => {
+        // correctly format songID
+        const formattedID = songID.replace(/:/g, '%3A')
+        const errResponse = await songActions.addSong(formattedID, playlistID)
+        if (!errResponse) {
+            // update local version of playlist
+            dispatch(songActions.getPlaylistSongs(playlistID))
+            Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
+        } else {
+            Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
+        }
+    }
+
     return (
         <AddSongScreenUI
             nameChangeHandler={nameChangeHandler}
             name={name}
             isLoading={isLoading}
             searchResults={searchResults}
+            addSongHandler={addSongHandler}
         />
     )
 }
