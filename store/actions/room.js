@@ -76,6 +76,7 @@ export const initRoom = (roomName, password, device, userID) => {
 export const joinRoom = (roomName, userID) => {
     return async dispatch => {
         try {
+            await checkTokenFirebase()
             const fbToken = await getUserData('fb_accessToken')
             const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms.json?auth=${fbToken}`)
             const roomData = await rooms.json()

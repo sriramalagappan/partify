@@ -75,6 +75,7 @@ const HostPlayerScreenUI = props => {
                 duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
                 index={(props.queueTracks) ? props.queueTracks.length : 0}
                 nextURI={(props.nextTrack) ? props.nextTrack.track.uri : null }
+                length={props.length}
             />
         </View>
     )

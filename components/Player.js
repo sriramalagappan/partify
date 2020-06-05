@@ -1,3 +1,6 @@
+// AFTER DONE WITH EXPO BARE WORKFLOW, EJECT EXPO AND INSTALL React Native Background Timer
+// TO ALLOW SONGS TO BE UPDATED IN THE BACKGROUND
+
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, StyleSheet } from 'react-native'
@@ -11,6 +14,7 @@ const Player = props => {
     // Redux Store State Variables
     const deviceID = useSelector(state => state.room.device.id)
     const playlistID = useSelector(state => state.room.playlistID)
+    const roomID = useSelector(state => state.room.roomID)
 
     // Timer functionality
     const [time, setTime] = useState(0)
@@ -55,11 +59,11 @@ const Player = props => {
                 }
             }, 1000))
         }
-    },[startedPlayback, toggle])
+    }, [startedPlayback, toggle])
 
     useEffect(() => {
         const songEndHandler = async () => {
-            await dispatch(songActions.deleteSong(props.currentURI, playlistID, props.index))
+            await dispatch(songActions.deleteSong(props.currentURI, playlistID, props.index, roomID, true))
             await dispatch(songActions.getPlaylistSongs(playlistID))
             if (props.nextURI) {
                 await playerActions.startPlayback(deviceID, props.nextURI, 0)
@@ -79,6 +83,28 @@ const Player = props => {
         }
     }, [songEnd])
 
+    const toggleFF = async () => {
+        // set songEnd state to true to trick the system into thinking the song has ended
+        await playerActions.pausePlayback(deviceID)
+        setSongEnd(true)
+    }
+
+    const toggleFB = async () => {
+        const songID = await songActions.stepBack(playlistID, roomID, props.length + 1)
+        if (songID) {
+            clearInterval(playerInterval)
+            setPlayerInterval(null)
+            setSongEnd(false)
+            await playerActions.pausePlayback(deviceID)
+            await dispatch(songActions.getPlaylistSongs(playlistID))
+            await playerActions.startPlayback(deviceID, songID, 0)
+            setTime(Date.now())
+            setDelay(0)
+            setIsActive(true)
+            setToggle(!toggle)
+        }
+    }
+
     const placbackButton = (isActive) ? ('controller-paus') : ('controller-play')
 
     return (
@@ -92,9 +118,9 @@ const Player = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={props.addSongHandler}
+                    onPress={toggleFB}
                 >
-                    <Entypo name='controller-fast-backward' size={35} color={'white'} />
+                    <Entypo name='controller-jump-to-start' size={35} color={'white'} />
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
@@ -104,9 +130,9 @@ const Player = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={props.addSongHandler}
+                    onPress={toggleFF}
                 >
-                    <Entypo name='controller-fast-forward' size={35} color={'white'} />
+                    <Entypo name='controller-next' size={35} color={'white'} />
                 </AddButton>
                 <AddButton
                     style={styles.playButton}

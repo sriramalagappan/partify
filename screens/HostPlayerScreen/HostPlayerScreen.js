@@ -22,6 +22,7 @@ const HostPlayerScreen = props => {
     let queueTracks = null;
     let currentTrack = null;
     let nextTrack = null;
+    let length = 0;
     // reverse tracks and modify tracks by pulling out first song
     if (tracksData) {
         queueTracks = tracksData.reverse()
@@ -32,6 +33,7 @@ const HostPlayerScreen = props => {
             nextTrack = queueTracks[0]
             message += `     Up Next: ${nextTrack.track.name} - ${artistBuilder(nextTrack.track.artists)}`
         }
+        length = tracksData.length
     }
 
     const dispatch = useDispatch()
@@ -49,7 +51,7 @@ const HostPlayerScreen = props => {
     // delete the given song from the queue
     const deleteSongHandler = async (songID, index) => {
         let queueIndex = Math.abs((index + 1) - queueTracks.length)
-        await dispatch(songActions.deleteSong(songID, playlistID, queueIndex))
+        await dispatch(songActions.deleteSong(songID, playlistID, queueIndex, null, false))
         dispatch(songActions.getPlaylistSongs(playlistID))
     }
 
@@ -64,6 +66,7 @@ const HostPlayerScreen = props => {
             queueTracks={queueTracks}
             deleteSongHandler={deleteSongHandler}
             message={message}
+            length={length}
         />
     )
 }
