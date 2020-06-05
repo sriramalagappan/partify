@@ -12,15 +12,16 @@ const HostPlayerScreen = props => {
     const playlistID = useSelector(state => state.room.playlistID)
     let tracksData = useSelector(state => state.songs.tracks)
 
+    // falsey check for empty array
     if (tracksData == false) {
         tracksData = null
-    }
-    
+    } 
+
     // default message
     let message = 'You have no songs. To get started, add a song by clicking the plus button below'
     let queueTracks = null;
     let currentTrack = null;
-
+    let nextTrack = null;
     // reverse tracks and modify tracks by pulling out first song
     if (tracksData) {
         queueTracks = tracksData.reverse()
@@ -28,7 +29,8 @@ const HostPlayerScreen = props => {
         // change message
         message = `Currently Playing: ${currentTrack.track.name} - ${artistBuilder(currentTrack.track.artists)}`
         if (queueTracks[0]) {
-            message += `     Up Next: ${queueTracks[0].track.name} - ${artistBuilder(queueTracks[0].track.artists)}`
+            nextTrack = queueTracks[0]
+            message += `     Up Next: ${nextTrack.track.name} - ${artistBuilder(nextTrack.track.artists)}`
         }
     }
 
@@ -58,6 +60,7 @@ const HostPlayerScreen = props => {
         <HostPlayerScreenUI
             addSongHandler={addSongHandler}
             currentTrack={currentTrack}
+            nextTrack={nextTrack}
             queueTracks={queueTracks}
             deleteSongHandler={deleteSongHandler}
             message={message}

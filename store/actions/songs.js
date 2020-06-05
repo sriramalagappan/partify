@@ -113,7 +113,6 @@ export const deleteSong = (songID, playlistID, index) => {
                     tracks: [{ 'uri': songID, 'positions': [index] }]
                 })
             });
-            //const resData = await response.json()
             dispatch({ type: KEEP })
         } catch (err) {
             console.log(err)

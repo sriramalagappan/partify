@@ -4,6 +4,7 @@ import HomeScreenUI from './HomeScreenUI'
 import { useDispatch, useSelector } from 'react-redux'
 import * as userActions from '../../store/actions/user'
 import * as roomActions from '../../store/actions/room'
+import * as songActions from '../../store/actions/songs'
 import firebase from 'firebase';
 
 const HomeScreen = props => {
@@ -17,6 +18,7 @@ const HomeScreen = props => {
     const userID = useSelector(state => state.user.userID)
     const roomID = useSelector(state => state.room.roomID)
     const userType = useSelector(state => state.room.userType)
+    const playlistID = useSelector(state => state.room.playlistID)
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -28,12 +30,16 @@ const HomeScreen = props => {
 
     // if roomID and userType are initialized, user joined a room: route them
     useEffect(() => {
-        if(roomID) {
-            if(userType === 'host') {
-                props.navigation.navigate('Host')
+        const joinedRoom = async () => {
+            if (roomID && playlistID) {
+                if (userType === 'host') {
+                    await dispatch(songActions.getPlaylistSongs(playlistID))
+                    props.navigation.navigate('Host')
+                }
             }
         }
-    }, [roomID, userType])
+        joinedRoom()
+    }, [roomID, userType, playlistID])
 
     // Search input handler that updates roomName state
     const searchInputHandler = input => {
@@ -82,11 +88,6 @@ const HomeScreen = props => {
         // route to auth
         props.navigation.replace('Auth')
     }
-
-    useEffect(() => {
-        //componentDidMount
-        // exmaple feth with token: const response = await fetch(`https://partify-ec534.firebaseio.com/test.json?auth=${token}`
-    }, [])
 
     return (
         <HomeScreenUI

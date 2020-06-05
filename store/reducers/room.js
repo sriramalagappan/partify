@@ -4,7 +4,7 @@ const initialState = {
     roomID: null,
     roomName: '',
     device: null,
-    uid: null,
+    uri: null,
     playlistID: null,
     userType: '',
 }
@@ -16,7 +16,7 @@ const roomReducer = (state = initialState, action) => {
                 roomName: action.roomName,
                 device: action.device,
                 roomID: action.roomID,
-                uid: action.uid,
+                uid: action.uri,
                 playlistID: action.playlistID,
                 userType: action.userType
             }

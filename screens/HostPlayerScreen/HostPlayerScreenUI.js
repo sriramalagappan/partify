@@ -6,6 +6,7 @@ import AddButton from '../../components/AddButton'
 import Song from '../../components/Song'
 import artistBuidler from '../../misc/artistBuilder'
 import { Entypo } from '@expo/vector-icons'
+import Player from '../../components/Player'
 
 import styles from './styles'
 
@@ -68,40 +69,13 @@ const HostPlayerScreenUI = props => {
                 />
             </View>
             <View style={styles.div} />
-            <View style={styles.player}>
-                <View style={styles.buttonContainer}>
-                    <AddButton
-                    style={styles.playButton}
-                        onPress={props.addSongHandler}
-                    >
-                        <Entypo name='plus' size={25} color={'white'} />
-                    </AddButton>
-                    <AddButton
-                    style={styles.playButton}
-                        onPress={props.addSongHandler}
-                    >
-                        <Entypo name='controller-fast-backward' size={35} color={'white'} />
-                    </AddButton>
-                    <AddButton
-                    style={styles.playButton}
-                        onPress={props.addSongHandler}
-                    >
-                        <Entypo name='controller-play' size={40} color={'white'} style={styles.playIcon} />
-                    </AddButton>
-                    <AddButton
-                    style={styles.playButton}
-                        onPress={props.addSongHandler}
-                    >
-                        <Entypo name='controller-fast-forward' size={35} color={'white'} />
-                    </AddButton>
-                    <AddButton
-                    style={styles.playButton}
-                        onPress={props.addSongHandler}
-                    >
-                        <Entypo name='menu' size={25} color={'white'} />
-                    </AddButton>
-                </View>
-            </View>
+            <Player 
+                addSongHandler={props.addSongHandler}
+                currentURI={(props.currentTrack) ? props.currentTrack.track.uri : null}
+                duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
+                index={(props.queueTracks) ? props.queueTracks.length : 0}
+                nextURI={(props.nextTrack) ? props.nextTrack.track.uri : null }
+            />
         </View>
     )
 }
