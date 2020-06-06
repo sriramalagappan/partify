@@ -11,7 +11,7 @@ const CustomButton = props => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={{...styles.container, ...props.buttonContainerStyle}}>
             <TouchableCmp style={(Platform.OS === 'android') ? {flex:1} : null} onPress={props.onPress}>
                 <View style={{ ...styles.button, ...props.style }}>
                     <Text style={{ ...styles.text, ...props.textStyle}}>

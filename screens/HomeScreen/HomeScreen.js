@@ -19,6 +19,7 @@ const HomeScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
     const userType = useSelector(state => state.room.userType)
     const playlistID = useSelector(state => state.room.playlistID)
+    const userRooms = useSelector(state => state.room.userRooms)
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -62,6 +63,13 @@ const HomeScreen = props => {
         setIsLoading(false)
     }
 
+    // attempt to rejoin a room from pressing a room button
+    const rejoinRoomHandler = (roomName) => {
+        setIsLoading(true)
+        toggleJoinRoom(roomName, userID)
+        setIsLoading(false)
+    }
+
     // Delete all data in async storage, delete state data, logout user from firebase, and route to auth screen
     const logoutHandler = async () => {
         // Delete async data
@@ -98,6 +106,8 @@ const HomeScreen = props => {
             createRoomHandler={createRoomHandler}
             joinRoomHandler={joinRoomHandler}
             isLoading={isLoading}
+            userRooms={userRooms}
+            rejoinRoomHandler={rejoinRoomHandler}
         />
     )
 }

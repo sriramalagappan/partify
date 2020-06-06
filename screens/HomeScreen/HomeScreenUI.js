@@ -31,7 +31,23 @@ const HomeScreenUI = props => (
                     onSubmitEditing={props.joinRoomHandler}
                 />
                 <Text style={styles.header}>Current Rooms</Text>
-                <Text style={styles.caption}>You are currently not in any room. Join one or create your own!</Text>
+                {(props.userRooms == false) ?
+                    (
+                        <Text style={styles.caption}>You are currently not in any room. Join one or create your own!</Text>
+                    ) :
+                    (
+                        props.userRooms.map((room) => (
+                            <CustomButton
+                                title={room}
+                                style={styles.roomButton}
+                                onPress={() => {props.rejoinRoomHandler(room)}}
+                                textStyle={styles.roomText}
+                                buttonContainerStyle={styles.roomContainer}
+                                key={room}
+                            />
+                        ))
+                    )
+                }
             </View>
             <View style={styles.buttonsContainer}>
                 <CustomButton

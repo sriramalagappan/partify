@@ -8,6 +8,8 @@ import AddButton from './AddButton'
 import { Entypo } from '@expo/vector-icons'
 import * as playerActions from '../store/actions/player'
 import * as songActions from '../store/actions/songs'
+import * as roomActions from '../store/actions/room'
+import * as deviceActions from '../store/actions/devices'
 
 const Player = props => {
 
@@ -15,8 +17,11 @@ const Player = props => {
     const deviceID = useSelector(state => state.room.device.id)
     const playlistID = useSelector(state => state.room.playlistID)
     const roomID = useSelector(state => state.room.roomID)
+    const index = useSelector(state => state.room.index)
+    const playlistURI = useSelector(state => state.room.uri)
+    const position_ms = useSelector(state => state.player.position_ms)
 
-    // Timer functionality
+    // Timer states
     const [time, setTime] = useState(0)
     const [isActive, setIsActive] = useState(false)
     const [delay, setDelay] = useState(0)
@@ -28,28 +33,26 @@ const Player = props => {
 
     const dispatch = useDispatch()
 
+    // timer functionality + play / pause Spotify playback functionality
     const toggleTimer = async () => {
-        if (props.currentURI) {
-            if (isActive) {
-                await playerActions.pausePlayback(deviceID)
-                setDelayTime(Date.now())
+        if (isActive) {
+            await dispatch(playerActions.pausePlayback(deviceID))
+            setDelayTime(Date.now())
+        } else {
+            if (startedPlayback) {
+                const newDelay = delay + (Date.now() - delayTime)
+                setDelay(newDelay)
             } else {
-                if (startedPlayback) {
-                    const newDelay = delay + (Date.now() - delayTime)
-                    const positionTime = Date.now() - time - newDelay
-                    await playerActions.startPlayback(deviceID, props.currentURI, positionTime)
-                    setDelay(newDelay)
-                } else {
-                    await playerActions.startPlayback(deviceID, props.currentURI, 0)
-                    setTime(Date.now())
-                    setDelay(0)
-                    setStartedPlayback(true)
-                }
+                setTime(Date.now())
+                setDelay(0)
+                setStartedPlayback(true)
             }
+            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index))
         }
         setIsActive(!isActive)
     }
 
+    // create a new background timer with each new song that listens for the end of a song
     useEffect(() => {
         if (startedPlayback && !playerInterval) {
             setPlayerInterval(setInterval(() => {
@@ -61,12 +64,14 @@ const Player = props => {
         }
     }, [startedPlayback, toggle])
 
+    // Song Ending functionality that updates state and db
     useEffect(() => {
         const songEndHandler = async () => {
-            await dispatch(songActions.deleteSong(props.currentURI, playlistID, props.index, roomID, true))
+            const newIndex = index + 1
+            await dispatch(roomActions.setIndex(newIndex, roomID))
             await dispatch(songActions.getPlaylistSongs(playlistID))
+            // if a song is coming up, prepare for that by initializing the states
             if (props.nextURI) {
-                await playerActions.startPlayback(deviceID, props.nextURI, 0)
                 setTime(Date.now())
                 setDelay(0)
                 setIsActive(true)
@@ -74,7 +79,7 @@ const Player = props => {
             }
         }
         if (songEnd) {
-            // reset all the states, delete the song, refresh the playlist, and start playing the new song
+            // reset all the states, update index, refresh the playlist, and prepare for the new song
             setIsActive(false)
             clearInterval(playerInterval)
             setPlayerInterval(null)
@@ -83,26 +88,37 @@ const Player = props => {
         }
     }, [songEnd])
 
-    const toggleFF = async () => {
-        // set songEnd state to true to trick the system into thinking the song has ended
-        await playerActions.pausePlayback(deviceID)
-        setSongEnd(true)
-    }
-
-    const toggleFB = async () => {
-        const songID = await songActions.stepBack(playlistID, roomID, props.length + 1)
-        if (songID) {
+    // fast forward functionality
+    const skipNext = async () => {
+        // only allow if it is possible to go forward
+        if (props.currentURI) {
+            const newIndex = index + 1
+            await dispatch(roomActions.setIndex(newIndex, roomID))
+            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+            await dispatch(songActions.getPlaylistSongs(playlistID))
             clearInterval(playerInterval)
             setPlayerInterval(null)
-            setSongEnd(false)
-            await playerActions.pausePlayback(deviceID)
-            await dispatch(songActions.getPlaylistSongs(playlistID))
-            await playerActions.startPlayback(deviceID, songID, 0)
             setTime(Date.now())
             setDelay(0)
-            setIsActive(true)
             setToggle(!toggle)
         }
+    }
+
+    // rewind functionality
+    const skipBack = async () => {
+        // only allow if it is possible to go back
+        if (index !== 0) {
+            const newIndex = index - 1
+            await dispatch(roomActions.setIndex(newIndex, roomID))
+            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+            await dispatch(songActions.getPlaylistSongs(playlistID))
+            clearInterval(playerInterval)
+            setPlayerInterval(null)
+            setTime(Date.now())
+            setDelay(0)
+            setToggle(!toggle)
+        }
+        //TODO
     }
 
     const placbackButton = (isActive) ? ('controller-paus') : ('controller-play')
@@ -118,7 +134,7 @@ const Player = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={toggleFB}
+                    onPress={skipBack}
                 >
                     <Entypo name='controller-jump-to-start' size={35} color={'white'} />
                 </AddButton>
@@ -130,7 +146,7 @@ const Player = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={toggleFF}
+                    onPress={skipNext}
                 >
                     <Entypo name='controller-next' size={35} color={'white'} />
                 </AddButton>

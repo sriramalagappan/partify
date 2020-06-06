@@ -3,19 +3,28 @@ import StartupScreenUI from './StartupScreenUI'
 import { useDispatch, useSelector } from 'react-redux'
 import getUserData from '../../misc/getUserData'
 import * as userActions from '../../store/actions/user'
+import * as roomActions from '../../store/actions/room'
 import FirebaseAuth from '../../authentication/firebase_auth'
 
 const StartupScreen = props => {
 
     // Redux Store State Variables
     const userID = useSelector(state => state.user.userID)
+    const fetchedRooms = useSelector(state => state.room.fetchedRooms)
 
     const dispatch = useDispatch()
 
     // route to home screen (done when user data is initalized)
     useEffect(() => {
-        if (userID) {
+        if (fetchedRooms) {
             props.navigation.replace('Home')
+        }
+    }, [fetchedRooms])
+
+    // fetch user rooms
+    useEffect(() => {
+        if (userID) {
+            dispatch(roomActions.getUserRooms(userID))
         }
     }, [userID])
 

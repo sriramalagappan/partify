@@ -19,7 +19,7 @@ const HostPlayerScreenUI = props => {
             imageUri={itemData.item.track.album.images[1].url}
             isQueue
             elevatedUser
-            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri, props.queueTracks.indexOf(itemData.item)) }}
+            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri) }}
             isExplicit={itemData.item.track.explicit}
         />
     )
@@ -73,9 +73,7 @@ const HostPlayerScreenUI = props => {
                 addSongHandler={props.addSongHandler}
                 currentURI={(props.currentTrack) ? props.currentTrack.track.uri : null}
                 duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
-                index={(props.queueTracks) ? props.queueTracks.length : 0}
                 nextURI={(props.nextTrack) ? props.nextTrack.track.uri : null }
-                length={props.length}
             />
         </View>
     )

@@ -19,6 +19,7 @@ export default StyleSheet.create({
         textAlign: 'left',
         width: '85%',
         marginTop: 30,
+        marginBottom: 10,
     },
 
     searchContainer: {
@@ -69,5 +70,22 @@ export default StyleSheet.create({
         color: 'white',
         width: '85%',
         marginTop: 20,
+    },
+
+    roomButton: {
+        backgroundColor: '#111111',
+        width: width,
+        borderRadius: 0,
+        alignItems: 'flex-start',
+    },
+
+    roomText: {
+        color: '#a8a8a8',
+        marginLeft: width/12.5,
+        fontSize: 18,
+    },
+    
+    roomContainer: {
+        marginVertical: 1,
     }
 })

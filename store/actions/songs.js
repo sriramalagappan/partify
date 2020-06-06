@@ -73,12 +73,12 @@ export const getPlaylistSongs = (playlistID) => {
  * @param {*} songID Spotify ID of the song to be added
  * @param {*} playlistID Spotify ID of the playlist
  */
-export const addSong = async (songID, playlistID) => {
+export const addSong = async (songID, playlistID, position) => {
     try {
         await checkToken()
         const accessToken = await getUserData('accessToken')
         const auth = 'Bearer ' + accessToken
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${songID}&position=0`, {
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${songID}&position=${position}`, {
             method: 'POST',
             headers: {
                 'Authorization': auth,
@@ -98,7 +98,7 @@ export const addSong = async (songID, playlistID) => {
  * @param {*} playlistID Spotify ID of playlist to remove the song from
  * @param {*} index Location of the song in the playlist
  */
-export const deleteSong = (songID, playlistID, index, roomID, record) => {
+export const deleteSong = (songID, playlistID, index) => {
     return async dispatch => {
         try {
             await checkToken()
@@ -114,30 +114,6 @@ export const deleteSong = (songID, playlistID, index, roomID, record) => {
                     tracks: [{ 'uri': songID, 'positions': [index] }]
                 })
             });
-
-            // add deleted song to history if record is set to true
-            if (record) {
-                await checkTokenFirebase()
-                const fbToken = await getUserData('fb_accessToken')
-                const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`)
-                const roomData = await rooms.json()
-                let prevSongs = []
-                if (roomData && roomData.prevSongs) {
-                    prevSongs = roomData.prevSongs
-                }
-                // push id onto stack
-                prevSongs.push(songID)
-
-                // update Firebase Database
-                await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ prevSongs })
-                });
-            }
-
             dispatch({ type: KEEP })
         } catch (err) {
             console.log(err)
@@ -160,13 +136,14 @@ export const stepBack = async (playlistID, roomID, position) => {
         await checkToken()
         const accessToken = await getUserData('accessToken')
         const auth = 'Bearer ' + accessToken
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${song}&position=${position}`, {
+        await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${song}&position=${position}`, {
             method: 'POST',
             headers: {
                 'Authorization': auth,
                 'Content-Type': 'application/json'
             },
         });
+
         // update Firebase Database
         await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`, {
             method: 'PATCH',
@@ -176,6 +153,5 @@ export const stepBack = async (playlistID, roomID, position) => {
             body: JSON.stringify({ prevSongs })
         });
     }
-
     return song
 }

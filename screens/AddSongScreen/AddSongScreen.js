@@ -16,6 +16,9 @@ const AddSongScreen = props => {
     const searchResults = useSelector(state => state.songs.searchResults)
     const playlistID = useSelector(state => state.room.playlistID)
 
+    // Navigation-Passed Params
+    const position = props.navigation.getParam('position')
+
     const dispatch = useDispatch()
 
     // toggle dispatch for finding song from Spotify
@@ -45,7 +48,7 @@ const AddSongScreen = props => {
     const addSongHandler = async (songID) => {
         // correctly format songID
         const formattedID = songID.replace(/:/g, '%3A')
-        const errResponse = await songActions.addSong(formattedID, playlistID)
+        const errResponse = await songActions.addSong(formattedID, playlistID, position)
         if (!errResponse) {
             // update local version of playlist
             dispatch(songActions.getPlaylistSongs(playlistID))

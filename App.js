@@ -24,8 +24,9 @@ import MainNavigator from './navigation/MainNavigator'
 // reducer imports
 import userReducer from './store/reducers/user'
 import deviceReducer from './store/reducers/devices'
-import roomReducer from './store/reducers/room';
+import roomReducer from './store/reducers/room'
 import songReducer from './store/reducers/songs'
+import playerReducer from './store/reducers/player'
 
 // disable error warnings while in development
 console.disableYellowBox = true;
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   devices: deviceReducer,
   room: roomReducer,
   songs: songReducer,
+  player: playerReducer,
 })
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
