@@ -9,7 +9,6 @@ import { Entypo } from '@expo/vector-icons'
 import * as playerActions from '../store/actions/player'
 import * as songActions from '../store/actions/songs'
 import * as roomActions from '../store/actions/room'
-import * as deviceActions from '../store/actions/devices'
 
 const Player = props => {
 
@@ -29,7 +28,6 @@ const Player = props => {
     const [playerInterval, setPlayerInterval] = useState(null)
     const [songEnd, setSongEnd] = useState(false)
     const [startedPlayback, setStartedPlayback] = useState(false)
-    const [toggle, setToggle] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -60,9 +58,9 @@ const Player = props => {
                 if (time && (length > props.duration)) {
                     setSongEnd(true)
                 }
-            }, 1000))
+            }, 500))
         }
-    }, [startedPlayback, toggle])
+    }, [startedPlayback, time])
 
     // Song Ending functionality that updates state and db
     useEffect(() => {
@@ -71,11 +69,10 @@ const Player = props => {
             await dispatch(roomActions.setIndex(newIndex, roomID))
             await dispatch(songActions.getPlaylistSongs(playlistID))
             // if a song is coming up, prepare for that by initializing the states
-            if (props.nextURI) {
+            if (props.next) {
                 setTime(Date.now())
                 setDelay(0)
                 setIsActive(true)
-                setToggle(!toggle)
             }
         }
         if (songEnd) {
@@ -91,22 +88,27 @@ const Player = props => {
     // fast forward functionality
     const skipNext = async () => {
         // only allow if it is possible to go forward
-        if (props.currentURI) {
+        if (props.current) {
             const newIndex = index + 1
             await dispatch(roomActions.setIndex(newIndex, roomID))
             await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
             await dispatch(songActions.getPlaylistSongs(playlistID))
             clearInterval(playerInterval)
             setPlayerInterval(null)
-            setTime(Date.now())
-            setDelay(0)
-            setToggle(!toggle)
+            // determine if playback should continue or stop 
+            if (props.next) {
+                setTime(Date.now())
+                setDelay(0)
+            } else {
+                startedPlayback(false)
+                setIsActive(false)
+            }
         }
     }
 
     // rewind functionality
     const skipBack = async () => {
-        // only allow if it is possible to go back
+        // only allow if it is possible to go back, otherwise repeat first song
         if (index !== 0) {
             const newIndex = index - 1
             await dispatch(roomActions.setIndex(newIndex, roomID))
@@ -116,9 +118,13 @@ const Player = props => {
             setPlayerInterval(null)
             setTime(Date.now())
             setDelay(0)
-            setToggle(!toggle)
+        } else {
+            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, 0))
+            clearInterval(playerInterval)
+            setPlayerInterval(null)
+            setTime(Date.now())
+            setDelay(0)
         }
-        //TODO
     }
 
     const placbackButton = (isActive) ? ('controller-paus') : ('controller-play')

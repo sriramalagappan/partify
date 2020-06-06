@@ -71,9 +71,9 @@ const HostPlayerScreenUI = props => {
             <View style={styles.div} />
             <Player 
                 addSongHandler={props.addSongHandler}
-                currentURI={(props.currentTrack) ? props.currentTrack.track.uri : null}
+                current={(props.currentTrack) ? props.currentTrack.track.uri : null}
                 duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
-                nextURI={(props.nextTrack) ? props.nextTrack.track.uri : null }
+                next={(props.nextTrack) ? props.nextTrack.track.uri : null }
             />
         </View>
     )

@@ -14,6 +14,7 @@ const HostPlayerScreen = props => {
     const [queueTracks, setQueueTracks] = useState(null)
     const [currentTrack, setCurrentTrack] = useState(null)
     const [nextTrack, setNextTrack] = useState(null)
+    const [length, setLength] = useState(null)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -50,6 +51,7 @@ const HostPlayerScreen = props => {
     useEffect(() => {
         if (tracksData) {
             // modify tracks by filtering out the previous songs
+            setLength(tracksData.length)
             let i;
             for (i = 0; i < index; i++) {
                 tracksData.shift()
@@ -79,7 +81,7 @@ const HostPlayerScreen = props => {
 
     // route to add song screen if button pressed
     const addSongHandler = () => {
-        props.navigation.navigate({ routeName: 'Add', params: { position: length } })
+        props.navigation.navigate({ routeName: 'Add', params: { position: length} })
     }
 
     // delete the given song from the queue
