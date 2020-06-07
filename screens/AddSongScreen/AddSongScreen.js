@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import AddSongScreenUI from './AddSongScreenUI'
 import * as songActions from '../../store/actions/songs'
+import * as adminActions from '../../store/actions/admin'
+import * as hostActions from '../../store/actions/host'
 import { Alert } from 'react-native'
-
 
 const AddSongScreen = props => {
 
@@ -15,8 +16,11 @@ const AddSongScreen = props => {
     // Redux Store State Variables
     const searchResults = useSelector(state => state.songs.searchResults)
     const playlistID = useSelector(state => state.room.playlistID)
+    const userType = useSelector(state => state.room.userType)
+    const roomID = useSelector(state => state.room.roomID)
+    const userID = useSelector(state => state.user.userID)
 
-    // Navigation-Passed Params
+    // Navigation-Passed Variables
     const position = props.navigation.getParam('position')
 
     const dispatch = useDispatch()
@@ -44,18 +48,31 @@ const AddSongScreen = props => {
         }
     }
 
-    // add song and send alert that routes user back if successful
-    const addSongHandler = async (songID) => {
+    // if user is the host, add song and send alert that routes user back if successful
+    const addSongHostHandler = async (songID) => {
         // correctly format songID
         const formattedID = songID.replace(/:/g, '%3A')
         const errResponse = await songActions.addSong(formattedID, playlistID, position)
         if (!errResponse) {
             // update local version of playlist
             dispatch(songActions.getPlaylistSongs(playlistID))
+            await hostActions.updateResponse(roomID)
             Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
         } else {
             Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
         }
+    }
+
+    // if user is an admin, send the request to the host phone and route back if successful
+    const addSongAdminHandler = async (songID) => {
+        dispatch(adminActions.sendAddSongRequest(songID, roomID, userID, position))
+    }
+
+
+    let addSongHandler = addSongHostHandler
+
+    if (userType === 'admin') {
+        addSongHandler = addSongAdminHandler
     }
 
     return (

@@ -4,11 +4,12 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { View, StyleSheet } from 'react-native'
-import AddButton from './AddButton'
+import AddButton from '../../components/AddButton'
 import { Entypo } from '@expo/vector-icons'
-import * as playerActions from '../store/actions/player'
-import * as songActions from '../store/actions/songs'
-import * as roomActions from '../store/actions/room'
+import * as playerActions from '../../store/actions/player'
+import * as songActions from '../../store/actions/songs'
+import * as roomActions from '../../store/actions/room'
+import * as hostActions from '../../store/actions/host'
 
 const Player = props => {
 
@@ -67,6 +68,7 @@ const Player = props => {
         const songEndHandler = async () => {
             const newIndex = index + 1
             await dispatch(roomActions.setIndex(newIndex, roomID))
+            await hostActions.updateResponse(roomID)
             await dispatch(songActions.getPlaylistSongs(playlistID))
             // if a song is coming up, prepare for that by initializing the states
             if (props.next) {
@@ -92,6 +94,7 @@ const Player = props => {
             const newIndex = index + 1
             await dispatch(roomActions.setIndex(newIndex, roomID))
             await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+            await hostActions.updateResponse(roomID)
             await dispatch(songActions.getPlaylistSongs(playlistID))
             clearInterval(playerInterval)
             setPlayerInterval(null)
@@ -113,6 +116,7 @@ const Player = props => {
             const newIndex = index - 1
             await dispatch(roomActions.setIndex(newIndex, roomID))
             await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+            await hostActions.updateResponse(roomID)
             await dispatch(songActions.getPlaylistSongs(playlistID))
             clearInterval(playerInterval)
             setPlayerInterval(null)

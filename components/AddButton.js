@@ -1,23 +1,16 @@
 import React from 'react'
-import { View, StyleSheet, TouchableOpacity, Platform, TouchableNativeFeedback } from 'react-native'
-import colors from '../constants/Colors'
+import { View, StyleSheet, TouchableOpacity } from 'react-native'
 
 
 const AddButton = props => {
 
-    let TouchableCmp = TouchableOpacity
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback
-    }
-
     return (
         <View style={styles.container}>
-            <TouchableCmp style={(Platform.OS === 'android') ? { flex: 1 } : null} onPress={props.onPress}>
+            <TouchableOpacity onPress={props.onPress}>
                 <View style={{ ...styles.card, ...props.style }}>
                     {props.children}
                 </View>
-            </TouchableCmp>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -34,7 +27,6 @@ const styles = StyleSheet.create({
 
     container: {
         borderRadius: 25,
-        overflow: (Platform.OS === 'android' && Platform.Version >= 21) ? 'hidden' : 'visible',
     }
 });
 

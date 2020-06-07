@@ -184,3 +184,18 @@ export const setIndex = (newIndex, roomID) => {
         })
     }
 }
+
+export const getIndex = (roomID) => {
+    return async dispatch => {
+        await checkTokenFirebase()
+        const fbToken = await getUserData('fb_accessToken')
+        const response = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`)
+        const resData = await response.json()
+        const newIndex = resData.index
+
+        dispatch({
+            type: SET_INDEX,
+            index: newIndex
+        })
+    }
+}

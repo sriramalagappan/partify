@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen/HomeScreen'
 import CreateRoomScreen from '../screens/CreateRoomScreen/CreateRoomScreen'
 import HostPlayerScreen from '../screens/HostPlayerScreen/HostPlayerScreen'
 import AddScreen from '../screens/AddSongScreen/AddSongScreen'
+import AdminPlayerScreen from '../screens/AdminPlayerScreen/AdminPlayerScreen'
 
 import device from '../misc/device'
 import AddSongScreen from '../screens/AddSongScreen/AddSongScreen'
@@ -64,6 +65,7 @@ const MainNavigator = createStackNavigator(
         Create: CreateRoomScreen,
         Host: HostPlayerScreen,
         Add: AddSongScreen,
+        Admin: AdminPlayerScreen,
     },
     {
         headerMode: 'none',

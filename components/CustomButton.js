@@ -1,24 +1,18 @@
 import React from 'react'
-import { View, TouchableOpacity, StyleSheet, TouchableNativeFeedback, Platform, Text } from 'react-native'
+import { View, TouchableOpacity, StyleSheet, Text } from 'react-native'
 import colors from '../constants/Colors'
 
 const CustomButton = props => {
 
-    let TouchableCmp = TouchableOpacity
-
-    if (Platform.OS === 'android' && Platform.Version >= 21) {
-        TouchableCmp = TouchableNativeFeedback
-    }
-
     return (
         <View style={{...styles.container, ...props.buttonContainerStyle}}>
-            <TouchableCmp style={(Platform.OS === 'android') ? {flex:1} : null} onPress={props.onPress}>
+            <TouchableOpacity onPress={props.onPress}>
                 <View style={{ ...styles.button, ...props.style }}>
                     <Text style={{ ...styles.text, ...props.textStyle}}>
                         {props.title}
                     </Text>
                 </View>
-            </TouchableCmp>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -34,7 +28,6 @@ const styles = StyleSheet.create({
 
     container: {
         borderRadius: 10,
-        overflow: (Platform.OS === 'android' && Platform.Version >= 21) ? 'hidden' : 'visible',
         marginVertical: 10,
         marginHorizontal: 10,
     },

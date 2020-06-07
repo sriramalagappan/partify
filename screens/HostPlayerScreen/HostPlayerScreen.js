@@ -4,6 +4,8 @@ import HostPlayerScreenUI from './HostPlayerScreenUI'
 import * as songActions from '../../store/actions/songs'
 import * as deviceActions from '../../store/actions/devices'
 import * as roomActions from '../../store/actions/room'
+import * as listener from '../../misc/listener'
+import * as hostActions from '../../store/actions/host'
 import artistBuilder from '../../misc/artistBuilder'
 import { Alert } from 'react-native'
 
@@ -22,6 +24,7 @@ const HostPlayerScreen = props => {
     const userType = useSelector(state => state.room.userType)
     const deviceID = useSelector(state => state.room.device.id)
     const index = useSelector(state => state.room.index)
+    const roomID = useSelector(state => state.room.roomID)
 
     // create copy of tracksData for deleteHandler
     const tracksCopy = tracksData
@@ -44,6 +47,7 @@ const HostPlayerScreen = props => {
 
         return () => {
             dispatch(roomActions.resetRoom())
+            listener.stopListener(roomID)
         }
     }, [])
 
@@ -77,11 +81,18 @@ const HostPlayerScreen = props => {
                 setMessage('You have no songs. To get started, add a song by clicking the plus button below')
             }
         }
-    }, [tracksData])
+    }, [tracksData, index])
+
+    // start listener to firebase
+    useEffect(() => {
+        if (roomID) {
+            listener.startListener(roomID, (data) => { processMessage(data) })
+        }
+    }, [roomID])
 
     // route to add song screen if button pressed
     const addSongHandler = () => {
-        props.navigation.navigate({ routeName: 'Add', params: { position: length} })
+        props.navigation.navigate({ routeName: 'Add', params: { position: length } })
     }
 
     // delete the given song from the queue
@@ -93,6 +104,7 @@ const HostPlayerScreen = props => {
                 if (tracksCopy[i].track.uri === songID) {
                     // once found, delete, update, and terminate
                     await dispatch(songActions.deleteSong(songID, playlistID, (i + index + 1)))
+                    await hostActions.updateResponse(roomID)
                     dispatch(songActions.getPlaylistSongs(playlistID))
                     return;
                 }
@@ -100,8 +112,30 @@ const HostPlayerScreen = props => {
         }
     }
 
-    // determine if the user has elevated status (host/admin)
-
+    // if a message is sent to the host, procecss it depending on the type
+    const processMessage = async (data) => {
+        if (data && data.val()) {
+            const to = data.val().to
+            const from = data.val().from
+            const type = data.val().type
+            const body = data.val().body
+            const { songID, position } = body
+            if (to === 'host') {
+                if (type === 'ADD_SONG') {
+                    // add the song to the playlist
+                    const formattedID = songID.replace(/:/g, '%3A')
+                    const errResponse = await songActions.addSong(formattedID, playlistID, position)
+                    // if addition was successful, send a message back indicating that is was successful
+                    if (!errResponse) {
+                        dispatch(songActions.getPlaylistSongs(playlistID))
+                        await hostActions.successResponse(from, roomID)
+                    } else {
+                        await hostActions.failureResponse(from, 'COULD NOT ADD SONG', roomID)
+                    }
+                }
+            }
+        }
+    }
 
     return (
         <HostPlayerScreenUI

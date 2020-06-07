@@ -57,7 +57,7 @@ export default StyleSheet.create({
         backgroundColor: 'transparent',
         borderTopWidth: 0,
         borderBottomWidth: 0,
-        marginTop: (height / 30)
+        marginTop: (height / 23)
     },
 
     inputText: {

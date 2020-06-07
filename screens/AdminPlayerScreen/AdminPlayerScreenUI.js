@@ -4,11 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient'
 import TextTicker from 'react-native-text-ticker'
 import Song from '../../components/Song'
 import artistBuidler from '../../misc/artistBuilder'
-import Player from './Player'
+import AdminPlayer from './AdminPlayer'
 
 import styles from './styles'
 
-const HostPlayerScreenUI = props => {
+const AdminPlayerScreenUI = props => {
 
     const queueTrackRenderer = (itemData) => (
         <Song
@@ -67,14 +67,11 @@ const HostPlayerScreenUI = props => {
                 />
             </View>
             <View style={styles.div} />
-            <Player 
+            <AdminPlayer 
                 addSongHandler={props.addSongHandler}
-                current={(props.currentTrack) ? props.currentTrack.track.uri : null}
-                duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
-                next={(props.nextTrack) ? props.nextTrack.track.uri : null }
             />
         </View>
     )
 }
 
-export default HostPlayerScreenUI
+export default AdminPlayerScreenUI

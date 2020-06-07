@@ -20,6 +20,7 @@ const HomeScreen = props => {
     const userType = useSelector(state => state.room.userType)
     const playlistID = useSelector(state => state.room.playlistID)
     const userRooms = useSelector(state => state.room.userRooms)
+    
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -33,9 +34,11 @@ const HomeScreen = props => {
     useEffect(() => {
         const joinedRoom = async () => {
             if (roomID && playlistID) {
+                await dispatch(songActions.getPlaylistSongs(playlistID))
                 if (userType === 'host') {
-                    await dispatch(songActions.getPlaylistSongs(playlistID))
                     props.navigation.navigate('Host')
+                } else if (userType === 'admin') {
+                    props.navigation.navigate('Admin')
                 }
             }
         }
