@@ -33,6 +33,6 @@ export const updateResponse = async (roomID) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ to: 'EVERYONE', from: 'host', type: 'UPDATE', body: null })
+        body: JSON.stringify({ to: 'EVERYONE', from: 'host', type: 'UPDATE', body: 'sent' })
     });
 }

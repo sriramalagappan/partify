@@ -31,7 +31,7 @@ const Song = props => {
                 )
             }
             <View style={styles.column}>
-                <Text style={styles.name} numberOfLines={2}>{props.name}</Text>
+                <Text style={styles.name} numberOfLines={1}>{props.name}</Text>
                 <View style={styles.row}>
                     {(props.isExplicit) ?
                         (

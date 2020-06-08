@@ -17,7 +17,7 @@ const HostPlayerScreenUI = props => {
             imageUri={itemData.item.track.album.images[1].url}
             isQueue
             elevatedUser
-            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri) }}
+            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri, (itemData.index + 1)) }}
             isExplicit={itemData.item.track.explicit}
         />
     )

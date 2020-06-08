@@ -96,20 +96,11 @@ const HostPlayerScreen = props => {
     }
 
     // delete the given song from the queue
-    const deleteSongHandler = async (songID) => {
-        if (tracksCopy) {
-            // find song index
-            let i;
-            for (i = 0; i < tracksCopy.length; i++) {
-                if (tracksCopy[i].track.uri === songID) {
-                    // once found, delete, update, and terminate
-                    await dispatch(songActions.deleteSong(songID, playlistID, (i + index + 1)))
-                    await hostActions.updateResponse(roomID)
-                    dispatch(songActions.getPlaylistSongs(playlistID))
-                    return;
-                }
-            }
-        }
+    const deleteSongHandler = async (songID, position) => {
+        await dispatch(songActions.deleteSong(songID, playlistID, (position + index)))
+        await hostActions.updateResponse(roomID)
+        dispatch(songActions.getPlaylistSongs(playlistID))
+        return;
     }
 
     // if a message is sent to the host, procecss it depending on the type
@@ -119,9 +110,9 @@ const HostPlayerScreen = props => {
             const from = data.val().from
             const type = data.val().type
             const body = data.val().body
-            const { songID, position } = body
             if (to === 'host') {
                 if (type === 'ADD_SONG') {
+                    const { songID, position } = body
                     // add the song to the playlist
                     const formattedID = songID.replace(/:/g, '%3A')
                     const errResponse = await songActions.addSong(formattedID, playlistID, position)
@@ -132,6 +123,13 @@ const HostPlayerScreen = props => {
                     } else {
                         await hostActions.failureResponse(from, 'COULD NOT ADD SONG', roomID)
                     }
+                } else if (type === 'DELETE_SONG') {
+                    const { songID, position, playlistID } = body
+                    console.log(songID, position, playlistID)
+                    // delete the song from the playlist
+                    dispatch(songActions.deleteSong(songID, playlistID, position))
+                    await hostActions.updateResponse(roomID)
+                    dispatch(songActions.getPlaylistSongs(playlistID))
                 }
             }
         }

@@ -23,6 +23,8 @@ const AdminPlayerScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
 
+    const tracksCopy = tracksData
+
     const dispatch = useDispatch()
 
     // componentDidMount 
@@ -77,11 +79,13 @@ const AdminPlayerScreen = props => {
     const responseHandler = (data) => {
         if (data && data.val()) {
             const to = data.val().to
+            const from = data.val.from
             const type = data.val().type
             const body = data.val().body
             if (to === userID) {
                 if (type === 'SUCCESS') {
                     dispatch(songActions.getPlaylistSongs(playlistID))
+                    adminActions.updateResponse(roomID, userID)
                     Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
@@ -89,11 +93,11 @@ const AdminPlayerScreen = props => {
                 // clear message after read
                 adminActions.clearMessage(roomID)
             } else if (to === 'EVERYONE') {
-                if (type === 'UPDATE') {
+                if (type === 'UPDATE' && from !== userID) {
                     dispatch(songActions.getPlaylistSongs(playlistID))
                     dispatch(roomActions.getIndex(roomID))
-                    // clear message after read
-                    adminActions.clearMessage(roomID)
+                    // clear body so that the next update request will be heard from the listener
+                    adminActions.clearBody(roomID)
                 }
             }
         }
@@ -105,8 +109,9 @@ const AdminPlayerScreen = props => {
     }
 
     // delete the given song from the queue
-    const deleteSongHandler = async (songID) => {
-
+    const deleteSongHandler = async (songID, position) => {
+        //send delete request to host and stop looping
+        dispatch(adminActions.sendDeleteRequest(songID, playlistID, (position + index), userID, roomID))
     }
 
     return (

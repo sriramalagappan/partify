@@ -3,10 +3,8 @@
  * Manages song information, playlist songs, and searching for songs
 */
 
-
 import getUserData from '../../misc/getUserData'
 import checkToken from '../../authentication/spotify_check'
-import checkTokenFirebase from '../../authentication/firebase_check'
 
 export const PLAYLIST_SONGS = 'PLAYLIST_SONGS'
 export const RESET_SONGS = 'RESET_SONGS'
@@ -104,7 +102,7 @@ export const deleteSong = (songID, playlistID, index) => {
             await checkToken()
             const accessToken = await getUserData('accessToken')
             const auth = 'Bearer ' + accessToken
-            const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+            await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': auth,
@@ -119,39 +117,4 @@ export const deleteSong = (songID, playlistID, index) => {
             console.log(err)
         }
     }
-}
-
-export const stepBack = async (playlistID, roomID, position) => {
-    await checkTokenFirebase()
-    const fbToken = await getUserData('fb_accessToken')
-    const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`)
-    const roomData = await rooms.json()
-
-    let song = null
-
-    if (roomData && roomData.prevSongs) {
-        let { prevSongs } = roomData
-        song = prevSongs.pop()
-        // update Spoitfy playlist
-        await checkToken()
-        const accessToken = await getUserData('accessToken')
-        const auth = 'Bearer ' + accessToken
-        await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${song}&position=${position}`, {
-            method: 'POST',
-            headers: {
-                'Authorization': auth,
-                'Content-Type': 'application/json'
-            },
-        });
-
-        // update Firebase Database
-        await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ prevSongs })
-        });
-    }
-    return song
 }

@@ -17,7 +17,7 @@ const AdminPlayerScreenUI = props => {
             imageUri={itemData.item.track.album.images[1].url}
             isQueue
             elevatedUser
-            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri) }}
+            onSwipeRight={() => { props.deleteSongHandler(itemData.item.track.uri, (itemData.index + 1)) }}
             isExplicit={itemData.item.track.explicit}
         />
     )
@@ -67,7 +67,7 @@ const AdminPlayerScreenUI = props => {
                 />
             </View>
             <View style={styles.div} />
-            <AdminPlayer 
+            <AdminPlayer
                 addSongHandler={props.addSongHandler}
             />
         </View>

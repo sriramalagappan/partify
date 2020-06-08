@@ -30,3 +30,43 @@ export const clearMessage = async (roomID) => {
         body: JSON.stringify({ from: null, to: null, type: null, body: null })
     });
 }
+
+export const updateResponse = async (roomID, userID) => {
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ to: 'EVERYONE', from: userID, type: 'UPDATE', body: 'sent' })
+    });
+}
+
+export const clearBody = async (roomID) => {
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ body: null })
+    });
+}
+
+export const sendDeleteRequest = (songID, playlistID, position, userID, roomID) => {
+    return async dispatch => {
+        await checkTokenFirebase()
+        const fbToken = await getUserData('fb_accessToken')
+        await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ from: userID, to: 'host', type: 'DELETE_SONG', body: { songID, position, playlistID } })
+        });
+
+        dispatch({ type: SENT_REQUEST })
+    }
+}
