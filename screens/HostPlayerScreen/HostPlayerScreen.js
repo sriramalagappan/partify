@@ -26,9 +26,6 @@ const HostPlayerScreen = props => {
     const index = useSelector(state => state.room.index)
     const roomID = useSelector(state => state.room.roomID)
 
-    // create copy of tracksData for deleteHandler
-    const tracksCopy = tracksData
-
     const dispatch = useDispatch()
 
     // componentDidMount 
@@ -125,7 +122,6 @@ const HostPlayerScreen = props => {
                     }
                 } else if (type === 'DELETE_SONG') {
                     const { songID, position, playlistID } = body
-                    console.log(songID, position, playlistID)
                     // delete the song from the playlist
                     dispatch(songActions.deleteSong(songID, playlistID, position))
                     await hostActions.updateResponse(roomID)

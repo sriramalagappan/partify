@@ -15,6 +15,7 @@ const AdminPlayerScreen = props => {
     const [queueTracks, setQueueTracks] = useState(null)
     const [currentTrack, setCurrentTrack] = useState(null)
     const [length, setLength] = useState(null)
+    const [requestTimeout, setRequestTimeout] = useState(null)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -22,8 +23,7 @@ const AdminPlayerScreen = props => {
     const index = useSelector(state => state.room.index)
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
-
-    const tracksCopy = tracksData
+    const sentRequest = useSelector(state => state.admin.sentRequest)
 
     const dispatch = useDispatch()
 
@@ -90,8 +90,8 @@ const AdminPlayerScreen = props => {
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
                 }
-                // clear message after read
-                adminActions.clearMessage(roomID)
+                // clear message 
+                dispatch(adminActions.clearMessage(roomID))
             } else if (to === 'EVERYONE') {
                 if (type === 'UPDATE' && from !== userID) {
                     dispatch(songActions.getPlaylistSongs(playlistID))
@@ -113,6 +113,22 @@ const AdminPlayerScreen = props => {
         //send delete request to host and stop looping
         dispatch(adminActions.sendDeleteRequest(songID, playlistID, (position + index), userID, roomID))
     }
+
+    // If a request is sent, set a timeout for 3 seconds. If a response is not heard in that
+    // time frame, cancel request and let user know
+    useEffect(() => {
+        if (sentRequest) {
+            const timer = setTimeout(async () => {
+                // check sent request again when script runs in 3 seconds
+                const check = await adminActions.checkRequest(roomID, userID)
+                if (!check) {
+                    Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
+                    dispatch(adminActions.clearMessage(roomID))
+                }
+            }, 3000)
+            setRequestTimeout(timer)
+        }
+    }, [sentRequest])
 
     return (
         <AdminPlayerScreenUI

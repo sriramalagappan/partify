@@ -73,53 +73,53 @@ export const pausePlayback = (deviceID) => {
     }
 }
 
-/**
- * Skips to next track in the user’s queue.
- * @param {*} deviceID Device ID to target action
- */
-export const skipNextPlayback = (deviceID) => {
-    return async dispatch => {
-        try {
-            await checkToken()
-            const accessToken = await getUserData('accessToken')
-            const auth = 'Bearer ' + accessToken
-            await fetch(`https://api.spotify.com/v1/me/player/next?device_id=${deviceID}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': auth,
-                },
-            });
+// /**
+//  * Skips to next track in the user’s queue.
+//  * @param {*} deviceID Device ID to target action
+//  */
+// export const skipNextPlayback = (deviceID) => {
+//     return async dispatch => {
+//         try {
+//             await checkToken()
+//             const accessToken = await getUserData('accessToken')
+//             const auth = 'Bearer ' + accessToken
+//             await fetch(`https://api.spotify.com/v1/me/player/next?device_id=${deviceID}`, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Authorization': auth,
+//                 },
+//             });
 
-            dispatch({ type: RESET_POSITION })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-}
+//             dispatch({ type: RESET_POSITION })
+//         } catch (err) {
+//             console.log(err)
+//         }
+//     }
+// }
 
-/**
- * Skips to previous track in the user’s queue.
- * @param {*} deviceID Device ID to target action
- */
-export const skipPreviousPlayback = (deviceID) => {
-    return async dispatch => {
-        try {
-            await checkToken()
-            const accessToken = await getUserData('accessToken')
-            const auth = 'Bearer ' + accessToken
-            await fetch(`https://api.spotify.com/v1/me/player/previous?device_id=${deviceID}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': auth,
-                },
-            });
+// /**
+//  * Skips to previous track in the user’s queue.
+//  * @param {*} deviceID Device ID to target action
+//  */
+// export const skipPreviousPlayback = (deviceID) => {
+//     return async dispatch => {
+//         try {
+//             await checkToken()
+//             const accessToken = await getUserData('accessToken')
+//             const auth = 'Bearer ' + accessToken
+//             await fetch(`https://api.spotify.com/v1/me/player/previous?device_id=${deviceID}`, {
+//                 method: 'POST',
+//                 headers: {
+//                     'Authorization': auth,
+//                 },
+//             });
 
-            dispatch({ type: RESET_POSITION })
-        } catch (err) {
-            console.log(err)
-        }
-    }
-}
+//             dispatch({ type: RESET_POSITION })
+//         } catch (err) {
+//             console.log(err)
+//         }
+//     }
+// }
 
 // export const getUserPlayback = () => {
 //     return async dispatch => {

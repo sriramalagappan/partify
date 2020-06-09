@@ -2,6 +2,7 @@ import checkTokenFirebase from '../../authentication/firebase_check'
 import getUserData from '../../misc/getUserData'
 
 export const SENT_REQUEST = 'SENT_REQUEST'
+export const CLEAR_REQUEST = 'CLEAR_REQUEST'
 
 export const sendAddSongRequest = (songID, roomID, userID, position) => {
     return async dispatch => {
@@ -19,16 +20,20 @@ export const sendAddSongRequest = (songID, roomID, userID, position) => {
     }
 }
 
-export const clearMessage = async (roomID) => {
-    await checkTokenFirebase()
-    const fbToken = await getUserData('fb_accessToken')
-    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ from: null, to: null, type: null, body: null })
-    });
+export const clearMessage = (roomID) => {
+    return async dispatch => {
+        await checkTokenFirebase()
+        const fbToken = await getUserData('fb_accessToken')
+        await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ from: null, to: null, type: null, body: null })
+        });
+
+        dispatch({ type: CLEAR_REQUEST })
+    }
 }
 
 export const updateResponse = async (roomID, userID) => {
@@ -69,4 +74,16 @@ export const sendDeleteRequest = (songID, playlistID, position, userID, roomID) 
 
         dispatch({ type: SENT_REQUEST })
     }
+}
+
+export const checkRequest = async (roomID, userID) => {
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    const response = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`)
+    const resData = await response.json()
+    const { from } = resData
+    if (from === userID) {
+        return false;
+    }
+    return true;
 }

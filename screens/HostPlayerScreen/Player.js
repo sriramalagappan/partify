@@ -102,6 +102,7 @@ const Player = props => {
             if (props.next) {
                 setTime(Date.now())
                 setDelay(0)
+                setIsActive(true)
             } else {
                 startedPlayback(false)
                 setIsActive(false)
@@ -122,12 +123,14 @@ const Player = props => {
             setPlayerInterval(null)
             setTime(Date.now())
             setDelay(0)
+            setIsActive(true)
         } else {
             await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, 0))
             clearInterval(playerInterval)
             setPlayerInterval(null)
             setTime(Date.now())
             setDelay(0)
+            setIsActive(true)
         }
     }
 

@@ -25,7 +25,6 @@ class FirebaseAuth {
     listener = () => {
         firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
-                // User signed in
                 const data = user.toJSON()
                 const fb_accessToken = data.stsTokenManager.accessToken
                 const fb_expirationTime = data.stsTokenManager.expirationTime
