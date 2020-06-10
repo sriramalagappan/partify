@@ -7,6 +7,7 @@ import * as adminActions from '../../store/actions/admin'
 import artistBuilder from '../../misc/artistBuilder'
 import * as listener from '../../misc/listener'
 import { Alert } from 'react-native'
+import getUserData from '../../misc/getUserData'
 
 const AdminPlayerScreen = props => {
 
@@ -15,7 +16,6 @@ const AdminPlayerScreen = props => {
     const [queueTracks, setQueueTracks] = useState(null)
     const [currentTrack, setCurrentTrack] = useState(null)
     const [length, setLength] = useState(null)
-    const [requestTimeout, setRequestTimeout] = useState(null)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -66,7 +66,7 @@ const AdminPlayerScreen = props => {
                 setMessage('You have no songs. To get started, add a song by clicking the plus button below')
             }
         }
-    }, [tracksData, index])
+    }, [tracksData])
 
     // start listener to firebase
     useEffect(() => {
@@ -121,12 +121,12 @@ const AdminPlayerScreen = props => {
             const timer = setTimeout(async () => {
                 // check sent request again when script runs in 3 seconds
                 const check = await adminActions.checkRequest(roomID, userID)
+                console.log(check)
                 if (!check) {
                     Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
                     dispatch(adminActions.clearMessage(roomID))
                 }
             }, 3000)
-            setRequestTimeout(timer)
         }
     }, [sentRequest])
 

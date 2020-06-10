@@ -178,6 +178,7 @@ export const setIndex = (newIndex, roomID) => {
             },
             body: JSON.stringify({ index: newIndex })
         });
+
         dispatch({
             type: SET_INDEX,
             index: newIndex

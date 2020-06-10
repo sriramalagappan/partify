@@ -78,7 +78,7 @@ const HostPlayerScreen = props => {
                 setMessage('You have no songs. To get started, add a song by clicking the plus button below')
             }
         }
-    }, [tracksData, index])
+    }, [tracksData])
 
     // start listener to firebase
     useEffect(() => {

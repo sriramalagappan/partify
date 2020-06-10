@@ -43,6 +43,9 @@ const HostPlayerScreenUI = props => {
             >
                 {props.message}
             </TextTicker>
+
+            {/*Check if new playlist data is loading*/}
+
             {(props.currentTrack) ? (
                 <Song
                     name={(props.currentTrack.track.name)}
