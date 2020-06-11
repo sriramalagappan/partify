@@ -4,6 +4,13 @@ import getUserData from '../../misc/getUserData'
 export const SENT_REQUEST = 'SENT_REQUEST'
 export const CLEAR_REQUEST = 'CLEAR_REQUEST'
 
+/**
+ * Send a request to the host phone through Firebase asking to add the given song
+ * @param {*} songID Spotify ID of the song to add
+ * @param {*} roomID Firebase ID of the room to post the request to
+ * @param {*} userID The user ID of the person sending the request
+ * @param {*} position Position in the playlist to insert the song
+ */
 export const sendAddSongRequest = (songID, roomID, userID, position) => {
     return async dispatch => {
         await checkTokenFirebase()
@@ -20,6 +27,10 @@ export const sendAddSongRequest = (songID, roomID, userID, position) => {
     }
 }
 
+/**
+ * Clear the message folder in Firebase
+ * @param {*} roomID Firebase ID of the room to post the request to
+ */
 export const clearMessage = (roomID) => {
     return async dispatch => {
         await checkTokenFirebase()
@@ -36,6 +47,11 @@ export const clearMessage = (roomID) => {
     }
 }
 
+/**
+ * Send an update response to all phones in the room
+ * @param {*} roomID Firebase ID of the room to post the request to
+ * @param {*} userID The user ID of the person sending the request
+ */
 export const updateResponse = async (roomID, userID) => {
     await checkTokenFirebase()
     const fbToken = await getUserData('fb_accessToken')
@@ -48,6 +64,11 @@ export const updateResponse = async (roomID, userID) => {
     });
 }
 
+/**
+ * Clear just the body of the sent message (this is to allow a phone to send the same request twice)
+ * 
+ * @param {*} roomID Firebase ID of the room to post the request to
+ */
 export const clearBody = async (roomID) => {
     await checkTokenFirebase()
     const fbToken = await getUserData('fb_accessToken')
@@ -60,6 +81,14 @@ export const clearBody = async (roomID) => {
     });
 }
 
+/**
+ * Send a request to the host phone through Firebase asking to delete the given song
+ * @param {*} songID Spotify ID of the song to add
+ * @param {*} playlistID Spotify playlist ID
+ * @param {*} position Position in the playlist to insert the song
+ * @param {*} userID The user ID of the person sending the request
+ * @param {*} roomID Firebase ID of the room to post the request to
+ */
 export const sendDeleteRequest = (songID, playlistID, position, userID, roomID) => {
     return async dispatch => {
         await checkTokenFirebase()
@@ -76,6 +105,11 @@ export const sendDeleteRequest = (songID, playlistID, position, userID, roomID) 
     }
 }
 
+/**
+ * Check if the userID's request was recieved by the host or not
+ * @param {*} roomID Firebase ID of the room to post the request to
+ * @param {*} userID The user ID of the person sending the request
+ */
 export const checkRequest = async (roomID, userID) => {
     await checkTokenFirebase()
     const fbToken = await getUserData('fb_accessToken')
