@@ -30,7 +30,9 @@ const HostPlayerScreen = props => {
 
     // componentDidMount 
     useEffect(() => {
-        // check if the device is availbale, otherwise throw error and route back to home page
+        /**
+         * Check if the device is availbale, otherwise throw error/alert and route back to home page
+         */
         const checkDevice = async () => {
             if (userType === 'host') {
                 const response = await deviceActions.checkDevice(deviceID)
@@ -40,10 +42,29 @@ const HostPlayerScreen = props => {
             }
         }
         checkDevice()
+
+        // send inital room time
+        hostActions.updateRoomTime(roomID)
+
+        // start a timer to send the data to Firebase every minute to let the server know the latest time
+        // this room was active
+        const interval = setInterval(() => {
+            hostActions.updateRoomTime(roomID)
+        }, 60000)
+
+        // start listener
+        listener.startListener(roomID, (data) => { processMessage(data) })
+
+        // get playlist songs
         dispatch(songActions.getPlaylistSongs(playlistID))
 
+        // componentWillUnmount
         return () => {
+            // stop interval
+            clearInterval(interval)
+            // reset room data to default values
             dispatch(roomActions.resetRoom())
+            // stop listener when leaving the room
             listener.stopListener(roomID)
         }
     }, [])
@@ -80,19 +101,18 @@ const HostPlayerScreen = props => {
         }
     }, [tracksData])
 
-    // start listener to firebase
-    useEffect(() => {
-        if (roomID) {
-            listener.startListener(roomID, (data) => { processMessage(data) })
-        }
-    }, [roomID])
-
-    // route to add song screen if button pressed
+    /**
+     * Route to add song screen if button pressed
+     */
     const addSongHandler = () => {
         props.navigation.navigate({ routeName: 'Add', params: { position: length } })
     }
 
-    // delete the given song from the queue
+    /**
+     * Delete the given song from the queue
+     * @param {*} songID Spotify ID of the song to delete
+     * @param {*} position Position of the song to delete in the playlist
+     */
     const deleteSongHandler = async (songID, position) => {
         await dispatch(songActions.deleteSong(songID, playlistID, (position + index)))
         await hostActions.updateResponse(roomID)
@@ -100,7 +120,10 @@ const HostPlayerScreen = props => {
         return;
     }
 
-    // if a message is sent to the host, procecss it depending on the type
+    /**
+     * Procecss and respond to messages sent via Firebase 
+     * @param {*} data Content of message recieved from firebase
+     */
     const processMessage = async (data) => {
         if (data && data.val()) {
             const to = data.val().to

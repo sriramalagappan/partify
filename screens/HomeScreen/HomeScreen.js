@@ -12,6 +12,7 @@ const HomeScreen = props => {
     // Stateful Variables
     const [roomName, setRoomName] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
 
     // Redux Store State Variables
     const display_name = useSelector(state => state.user.display_name)
@@ -55,22 +56,28 @@ const HomeScreen = props => {
         props.navigation.navigate('Create')
     }
 
-    const toggleJoinRoom = useCallback((roomName, userID) => {
-        dispatch(roomActions.joinRoom(roomName, userID))
-    }, [dispatch])
-
     // attempt to join a room given roomName in searchbar
-    const joinRoomHandler = () => {
+    const joinRoomHandler = useCallback(async () => {
         setIsLoading(true)
-        toggleJoinRoom(roomName, userID)
+        try {
+            await dispatch(roomActions.joinRoom(roomName, userID))
+        } catch (err) {
+            console.log(err)
+        }
         setIsLoading(false)
-    }
+    }, [dispatch, isLoading])
 
-    // attempt to rejoin a room from pressing a room button
-    const rejoinRoomHandler = (roomName) => {
-        setIsLoading(true)
-        toggleJoinRoom(roomName, userID)
-        setIsLoading(false)
+    const toggleRejoinRoom = useCallback((roomID, userType) => {
+        dispatch(roomActions.rejoinRoom(roomID, userType))
+    })
+
+    // attempt to rejoin a room
+    const rejoinRoomHandler = (roomID, userType, time) => {
+        if (Date.now() - time < 63000 || userType === 'host') {
+            toggleRejoinRoom(roomID, userType)
+        } else {
+            Alert.alert('Room is Offline', 'The room is currently offline. Please refresh by swiping down and try to join the room again', [{ text: 'Okay' }])
+        }
     }
 
     // Delete all data in async storage, delete state data, logout user from firebase, and route to auth screen
@@ -100,6 +107,17 @@ const HomeScreen = props => {
         props.navigation.replace('Auth')
     }
 
+    const refreshHandler = useCallback(async () => {
+        setRefreshing(true)
+        try {
+            await dispatch(roomActions.getUserRooms(userID))
+        } catch (err) {
+            // TODO
+            console.log(err)
+        }
+        setRefreshing(false)
+    }, [dispatch, refreshing])
+
     return (
         <HomeScreenUI
             display_name={(display_name) ? display_name : ''}
@@ -111,6 +129,8 @@ const HomeScreen = props => {
             isLoading={isLoading}
             userRooms={userRooms}
             rejoinRoomHandler={rejoinRoomHandler}
+            refreshHandler={refreshHandler}
+            refreshing={refreshing}
         />
     )
 }

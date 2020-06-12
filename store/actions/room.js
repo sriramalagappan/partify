@@ -126,6 +126,29 @@ export const joinRoom = (roomName, userID) => {
     }
 }
 
+export const rejoinRoom = (roomID, userType) => {
+    return async dispatch => {
+        await checkTokenFirebase()
+        const fbToken = await getUserData('fb_accessToken')
+        const response = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`)
+        const resData = await response.json()
+
+        const { roomName, device, uri, playlistID, index } = resData
+
+        dispatch({
+            type: INIT_ROOM,
+            roomName,
+            device,
+            roomID,
+            uri,
+            playlistID,
+            userType,
+            index,
+        })
+
+    }
+}
+
 export const getUserRooms = (userID) => {
     return async dispatch => {
         try {
@@ -137,24 +160,24 @@ export const getUserRooms = (userID) => {
             const userRooms = []
 
             for (const key in roomData) {
-                let isRoomMember = false
+                let userType = ''
                 // check if user is host
                 if (roomData[key].hostID === userID) {
-                    isRoomMember = true
+                    userType = 'host'
                 }
                 // otherwise check if user is an admin of the room
                 else {
                     const { admins } = roomData[key]
                     if (admins) {
                         if (admins.indexOf(userID) !== -1) {
-                            isRoomMember = true
+                            userType = 'admin'
                         }
                     }
                 }
 
-                // if user was a member of the room, append its name to the list of all rooms
-                if (isRoomMember) {
-                    userRooms.push(roomData[key].roomName)
+                // if user was a member of the room, append their name to the list of all rooms
+                if (userType) {
+                    userRooms.push({ name: roomData[key].roomName, time: roomData[key].currentTime, userType, roomID: key })
                 }
             }
             dispatch({

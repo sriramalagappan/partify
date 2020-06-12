@@ -36,3 +36,16 @@ export const updateResponse = async (roomID) => {
         body: JSON.stringify({ to: 'EVERYONE', from: 'host', type: 'UPDATE', body: 'sent' })
     });
 }
+
+export const updateRoomTime = async (roomID) => {
+    const currentTime = Date.now()
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({currentTime})
+    });
+}

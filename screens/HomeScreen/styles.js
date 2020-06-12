@@ -1,9 +1,9 @@
 import { StyleSheet, Dimensions } from 'react-native'
-
 import colors from '../../constants/Colors'
 
 const height = (Dimensions.get('window').height)
 const width = (Dimensions.get('window').width)
+
 
 export default StyleSheet.create({
     screen: {
@@ -76,16 +76,44 @@ export default StyleSheet.create({
         backgroundColor: '#111111',
         width: width,
         borderRadius: 0,
-        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        height: 50,
+        alignItems: 'center',
+        flexDirection: 'row'
     },
 
     roomText: {
         color: '#a8a8a8',
         marginLeft: width/12.5,
         fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'regular'
     },
+
+    roomOnline: {
+        color: colors.primary,
+        marginRight: width/12.5,
+        fontSize: 15,
+        textAlign: 'center',
+        fontFamily: 'medium'
+    }, 
+
+    roomOffline: {
+        color: 'red',
+        marginRight: width/12.5,
+        fontSize: 15,
+        textAlign: 'center',
+        fontFamily: 'medium'
+    }, 
     
     roomContainer: {
         marginVertical: 1,
+    },
+
+    refreshIndicator: {
+        alignContent: 'center',
+        justifyContent: 'flex-end',
+        marginBottom: 40,
+        flex: 1,
     }
 })
