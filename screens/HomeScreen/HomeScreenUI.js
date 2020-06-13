@@ -81,7 +81,7 @@ const HomeScreenUI = props => (
                                         {/* See if room is online */}
 
                                         <Text style={((Date.now() - room.time) < 63000) ? styles.roomOnline : styles.roomOffline}>
-                                            {((Date.now() - room.time) < 70000) ? 'Online' : 'Offline'}
+                                            {((Date.now() - room.time) < 63000) ? 'Online' : 'Offline'}
                                         </Text>
                                     </View>
                                 </TouchableOpacity>

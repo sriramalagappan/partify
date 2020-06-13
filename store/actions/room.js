@@ -20,6 +20,13 @@ export const resetRoom = () => {
     return { type: RESET_ROOM }
 }
 
+/**
+ * Create a new room and save information in Firebase
+ * @param {*} roomName Name of the room that other users will use to join
+ * @param {*} password (Optional) Password for the room
+ * @param {*} device Information about the device used by the room for Spotify playback
+ * @param {*} userID Spotify user ID
+ */
 export const initRoom = (roomName, password, device, userID) => {
     return async dispatch => {
         try {
@@ -78,6 +85,11 @@ export const initRoom = (roomName, password, device, userID) => {
     }
 }
 
+/**
+ * Join a room for the first time
+ * @param {*} roomName Name of the room to join
+ * @param {*} userID Spotify user ID of the person joining
+ */
 export const joinRoom = (roomName, userID) => {
     return async dispatch => {
         try {
@@ -126,6 +138,11 @@ export const joinRoom = (roomName, userID) => {
     }
 }
 
+/**
+ * Rejoin a room
+ * @param {*} roomID Firebase ID of the room to join
+ * @param {*} userType The elevated status of the user (member, admin, host)
+ */
 export const rejoinRoom = (roomID, userType) => {
     return async dispatch => {
         await checkTokenFirebase()
@@ -149,6 +166,10 @@ export const rejoinRoom = (roomID, userType) => {
     }
 }
 
+/**
+ * Get all the rooms the user has currently joined and information about them
+ * @param {*} userID Spotify user ID
+ */
 export const getUserRooms = (userID) => {
     return async dispatch => {
         try {
@@ -190,6 +211,12 @@ export const getUserRooms = (userID) => {
     }
 }
 
+/**
+ * Set the index of the room with the given value.
+ * Index is used to determine the position in the Spotify playlist given to the room
+ * @param {*} newIndex Value of the new index
+ * @param {*} roomID Firebase ID of the room
+ */
 export const setIndex = (newIndex, roomID) => {
     return async dispatch => {
         await checkTokenFirebase()
@@ -209,6 +236,10 @@ export const setIndex = (newIndex, roomID) => {
     }
 }
 
+/**
+ * Get the current index of the room
+ * @param {*} roomID Firebase ID of the room
+ */
 export const getIndex = (roomID) => {
     return async dispatch => {
         await checkTokenFirebase()
