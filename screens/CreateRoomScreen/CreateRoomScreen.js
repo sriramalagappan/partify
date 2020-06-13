@@ -32,29 +32,40 @@ const CreateRoomScreen = props => {
     useEffect(() => {
         const init = async () => {
             setIsLoading(true)
+            // get all the current active Spotify devices
             await dispatch(deviceActions.getDevices())
             setIsLoading(false)
         }
         init()
     }, [])
 
-    // If roomID exists, replace screen with home screen
+    // If roomID is created successfully, replace screen with host player screen
     useEffect(() => {
         if(roomID) {
             props.navigation.replace('Host')
         }
     }, [roomID])
 
-    // Input handler functions
+    /**
+     * Update room name state
+     * @param {*} input text from input field
+     */
     const roomNameHandler = input => {
         setRoomName(input)
     }
 
+    /**
+     * Update the password state
+     * @param {*} input text from input field
+     */
     const passwordHandler = input => {
         setPassword(input)
     }
 
-    // update device when available device is selected
+    /**
+     * update device when available device is selected
+     * @param {*} index location of the device in the array of devices
+     */
     const deviceHandler = index => {
         // if device is already checked, uncheck it 
         if (device && device.id === devices[index].id) {
@@ -64,14 +75,18 @@ const CreateRoomScreen = props => {
         }
     }
 
-    // get rooms again when refresh button is clicked
+    /**
+     * get active Spotify devices again when refresh button is clicked
+     */
     const refreshHandler = async () => {
         setIsLoading(true)
         await dispatch(deviceActions.getDevices())
         setIsLoading(false)
     }
 
-    // verify that all the required fields are filled and then send create room request
+    /**
+     * verify that all the required fields are filled and then send create room request
+     */
     const createHandler = () => {
         let isValid = true
 
@@ -86,6 +101,7 @@ const CreateRoomScreen = props => {
         // verify device
         if (!device) {
             setDeviceError('Please make sure a device is selected')
+            isValid = false
         } else {
             setDeviceError('')
         }
@@ -95,7 +111,12 @@ const CreateRoomScreen = props => {
         }
     }
 
-    //console.log(roomID)
+    /**
+     * Navigate the user back to the home screen
+     */
+    const homeHandler = () => {
+        props.navigation.pop()
+    }
 
     return (
         <CreateRoomScreenUI
@@ -112,6 +133,7 @@ const CreateRoomScreen = props => {
             passError={passError}
             deviceError={deviceError}
             createHandler={createHandler}
+            homeHandler={homeHandler}
         />
     )
 }

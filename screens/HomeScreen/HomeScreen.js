@@ -92,6 +92,9 @@ const HomeScreen = props => {
         // Delete state data
         dispatch(userActions.logoutUser())
 
+        // Delete room data
+        dispatch(roomActions.resetRoom())
+
         const user = firebase.auth().currentUser
 
         // logout user from firebase

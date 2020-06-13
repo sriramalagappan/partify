@@ -61,7 +61,7 @@ export default StyleSheet.create({
     },
 
     inputText: {
-        fontFamily: 'medium'
+        fontFamily: 'medium',
     },
 
     caption: {
@@ -99,7 +99,7 @@ export default StyleSheet.create({
     }, 
 
     roomOffline: {
-        color: 'red',
+        color: '#444444',
         marginRight: width/15.2,
         fontSize: 15,
         textAlign: 'center',
@@ -118,7 +118,7 @@ export default StyleSheet.create({
     },
 
     userTypeText: {
-        color: '#444444',
+        color: '#666666',
         marginRight: 20,
         fontSize: 15,
         textAlign: 'center',

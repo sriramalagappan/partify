@@ -39,9 +39,6 @@ const roomReducer = (state = initialState, action) => {
                 index: action.index
             }
         }
-        default: {
-            return state
-        }
         case RESET_ROOM: {
             return {
                 ...state,
@@ -54,6 +51,9 @@ const roomReducer = (state = initialState, action) => {
                 fetchedRooms: false,
                 index: 0,
             }
+        }
+        default: {
+            return state
         }
     }
 }

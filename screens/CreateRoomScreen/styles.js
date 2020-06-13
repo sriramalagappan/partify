@@ -40,4 +40,14 @@ export default StyleSheet.create({
         fontFamily: 'regular'
     },
 
+    homeButton: {
+        width: 60,
+        height: 40,
+        backgroundColor: 'black'
+    },
+
+    homeText: {
+        color: '#444444'
+    }
+
 })

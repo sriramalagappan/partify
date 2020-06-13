@@ -55,6 +55,12 @@ const CreateRoomScreenUI = props => (
                 textStyle={styles.buttonText}
                 onPress={props.createHandler}
             />
+            <CustomButton
+                title={'Home'}
+                style={styles.homeButton}
+                onPress={props.homeHandler}
+                textStyle={styles.homeText}
+            />
         </KeyboardAwareScrollView>
     </TouchableWithoutFeedback>
 )
