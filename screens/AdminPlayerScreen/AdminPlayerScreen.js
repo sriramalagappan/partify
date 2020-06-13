@@ -7,7 +7,6 @@ import * as adminActions from '../../store/actions/admin'
 import artistBuilder from '../../misc/artistBuilder'
 import * as listener from '../../misc/listener'
 import { Alert } from 'react-native'
-import getUserData from '../../misc/getUserData'
 
 const AdminPlayerScreen = props => {
 
@@ -121,7 +120,7 @@ const AdminPlayerScreen = props => {
             const timer = setTimeout(async () => {
                 // check sent request again when script runs in 3 seconds
                 const check = await adminActions.checkRequest(roomID, userID)
-                console.log(check)
+                console.log("Check: " + check)
                 if (!check) {
                     Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
                     dispatch(adminActions.clearMessage(roomID))

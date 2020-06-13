@@ -10,6 +10,8 @@ import * as playerActions from '../../store/actions/player'
 import * as songActions from '../../store/actions/songs'
 import * as roomActions from '../../store/actions/room'
 import * as hostActions from '../../store/actions/host'
+import * as deviceActions from '../../store/actions/devices'
+import { Alert } from 'react-native'
 
 const Player = props => {
 
@@ -37,18 +39,24 @@ const Player = props => {
         if (isActive) {
             await dispatch(playerActions.pausePlayback(deviceID))
             setDelayTime(Date.now())
+            setIsActive(!isActive)
         } else {
-            if (startedPlayback) {
-                const newDelay = delay + (Date.now() - delayTime)
-                setDelay(newDelay)
+            const response = await deviceActions.checkDevice(deviceID)
+            if (!response) {
+                Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
             } else {
-                setTime(Date.now())
-                setDelay(0)
-                setStartedPlayback(true)
+                if (startedPlayback) {
+                    const newDelay = delay + (Date.now() - delayTime)
+                    setDelay(newDelay)
+                } else {
+                    setTime(Date.now())
+                    setDelay(0)
+                    setStartedPlayback(true)
+                }
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index))
+                setIsActive(!isActive)
             }
-            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index))
         }
-        setIsActive(!isActive)
     }
 
     // create a new background timer with each new song that listens for the end of a song
@@ -91,46 +99,58 @@ const Player = props => {
     const skipNext = async () => {
         // only allow if it is possible to go forward
         if (props.current) {
-            const newIndex = index + 1
-            await dispatch(roomActions.setIndex(newIndex, roomID))
-            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
-            await hostActions.updateResponse(roomID)
-            await dispatch(songActions.getPlaylistSongs(playlistID))
-            clearInterval(playerInterval)
-            setPlayerInterval(null)
-            // determine if playback should continue or stop 
-            if (props.next) {
-                setTime(Date.now())
-                setDelay(0)
-                setIsActive(true)
+            // check device availability
+            const response = await deviceActions.checkDevice(deviceID)
+            if (!response) {
+                Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
             } else {
-                startedPlayback(false)
-                setIsActive(false)
+                const newIndex = index + 1
+                await dispatch(roomActions.setIndex(newIndex, roomID))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+                await hostActions.updateResponse(roomID)
+                await dispatch(songActions.getPlaylistSongs(playlistID))
+                clearInterval(playerInterval)
+                setPlayerInterval(null)
+                // determine if playback should continue or stop 
+                if (props.next) {
+                    setTime(Date.now())
+                    setDelay(0)
+                    setIsActive(true)
+                } else {
+                    startedPlayback(false)
+                    setIsActive(false)
+                }
             }
         }
     }
 
     // rewind functionality
     const skipBack = async () => {
-        // only allow if it is possible to go back, otherwise repeat first song
-        if (index !== 0) {
-            const newIndex = index - 1
-            await dispatch(roomActions.setIndex(newIndex, roomID))
-            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
-            await hostActions.updateResponse(roomID)
-            await dispatch(songActions.getPlaylistSongs(playlistID))
-            clearInterval(playerInterval)
-            setPlayerInterval(null)
-            setTime(Date.now())
-            setDelay(0)
-            setIsActive(true)
+        // check device availability
+        const response = await deviceActions.checkDevice(deviceID)
+        if (!response) {
+            Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
         } else {
-            await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, 0))
-            clearInterval(playerInterval)
-            setPlayerInterval(null)
-            setTime(Date.now())
-            setDelay(0)
-            setIsActive(true)
+            // only allow if it is possible to go back, otherwise repeat first song
+            if (index !== 0) {
+                const newIndex = index - 1
+                await dispatch(roomActions.setIndex(newIndex, roomID))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+                await hostActions.updateResponse(roomID)
+                await dispatch(songActions.getPlaylistSongs(playlistID))
+                clearInterval(playerInterval)
+                setPlayerInterval(null)
+                setTime(Date.now())
+                setDelay(0)
+                setIsActive(true)
+            } else {
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, 0))
+                clearInterval(playerInterval)
+                setPlayerInterval(null)
+                setTime(Date.now())
+                setDelay(0)
+                setIsActive(true)
+            }
         }
     }
 

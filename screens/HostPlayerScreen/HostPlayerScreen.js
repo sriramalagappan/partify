@@ -38,25 +38,25 @@ const HostPlayerScreen = props => {
                 const response = await deviceActions.checkDevice(deviceID)
                 if (!response) {
                     Alert.alert('Could Not Find Device', 'The Spotify device you selected could not be found. Please make sure Spotify is running on that device and try joining the room again', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
+                } else {
+                    // send inital room time
+                    hostActions.updateRoomTime(roomID)
+
+                    // start listener
+                    listener.startListener(roomID, async (data) => { await processMessage(data) })
+
+                    // get playlist songs
+                    dispatch(songActions.getPlaylistSongs(playlistID))
                 }
             }
         }
         checkDevice()
-
-        // send inital room time
-        hostActions.updateRoomTime(roomID)
 
         // start a timer to send the data to Firebase every minute to let the server know the latest time
         // this room was active
         const interval = setInterval(() => {
             hostActions.updateRoomTime(roomID)
         }, 60000)
-
-        // start listener
-        listener.startListener(roomID, (data) => { processMessage(data) })
-
-        // get playlist songs
-        dispatch(songActions.getPlaylistSongs(playlistID))
 
         // componentWillUnmount
         return () => {

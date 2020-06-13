@@ -21,7 +21,6 @@ const HomeScreen = props => {
     const userType = useSelector(state => state.room.userType)
     const playlistID = useSelector(state => state.room.playlistID)
     const userRooms = useSelector(state => state.room.userRooms)
-    
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -29,6 +28,17 @@ const HomeScreen = props => {
     // componentDidMount
     useEffect(() => {
         dispatch(roomActions.resetRoom())
+
+        // start a timer to update room Data from Firebase every 5 seconds
+        const interval = setInterval(() => {
+            dispatch(roomActions.getUserRooms(userID))
+        }, 5000)
+
+        // componentWillUnmount
+        return () => {
+            // clear timer
+            clearInterval(interval)
+        }
     }, [])
 
     // if roomID and userType are initialized, user joined a room: route them
