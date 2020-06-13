@@ -84,7 +84,7 @@ export default StyleSheet.create({
 
     roomText: {
         color: '#a8a8a8',
-        marginLeft: width/12.5,
+        marginLeft: width/15.2,
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'regular'
@@ -92,7 +92,7 @@ export default StyleSheet.create({
 
     roomOnline: {
         color: colors.primary,
-        marginRight: width/12.5,
+        marginRight: width/15.2,
         fontSize: 15,
         textAlign: 'center',
         fontFamily: 'medium'
@@ -100,7 +100,7 @@ export default StyleSheet.create({
 
     roomOffline: {
         color: 'red',
-        marginRight: width/12.5,
+        marginRight: width/15.2,
         fontSize: 15,
         textAlign: 'center',
         fontFamily: 'medium'
@@ -115,5 +115,17 @@ export default StyleSheet.create({
         justifyContent: 'flex-end',
         marginBottom: 40,
         flex: 1,
+    },
+
+    userTypeText: {
+        color: '#444444',
+        marginRight: 20,
+        fontSize: 15,
+        textAlign: 'center',
+        fontFamily: 'medium'
+    }, 
+
+    rightRoomText: {
+        flexDirection: 'row'
     }
 })

@@ -77,12 +77,15 @@ const HomeScreenUI = props => (
                                 <TouchableOpacity onPress={() => { props.rejoinRoomHandler(room.roomID, room.userType, room.time) }}>
                                     <View style={styles.roomButton}>
                                         <Text style={styles.roomText}> {room.name} </Text>
+                                        <View style={styles.rightRoomText}>
+                                            <Text style={styles.userTypeText}>{room.userType.split(/\s+/).map( s => s.charAt( 0 ).toUpperCase() + s.substring(1).toLowerCase() ).join( " " )}</Text>
 
-                                        {/* See if room is online */}
+                                            {/* See if room is online */}
 
-                                        <Text style={((Date.now() - room.time) < 63000) ? styles.roomOnline : styles.roomOffline}>
-                                            {((Date.now() - room.time) < 63000) ? 'Online' : 'Offline'}
-                                        </Text>
+                                            <Text style={((Date.now() - room.time) < 63000) ? styles.roomOnline : styles.roomOffline}>
+                                                {((Date.now() - room.time) < 63000) ? 'Online' : 'Offline'}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </TouchableOpacity>
                             </View>
