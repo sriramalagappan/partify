@@ -3,21 +3,36 @@ import { View, Text, FlatList, TouchableWithoutFeedback, Keyboard } from 'react-
 import { LinearGradient } from 'expo-linear-gradient';
 import { SearchBar } from 'react-native-elements'
 import TouchableSong from '../../components/TouchableSong'
+import CustomButton from '../../components/CustomButton'
 
 import styles from './styles'
 import artistBuilder from '../../misc/artistBuilder';
 
 const AddSongScreenUI = props => {
 
-    const renderSong = (itemData) => (
-        <TouchableSong
-            name={itemData.item.name}
-            author={artistBuilder(itemData.item.artists)}
-            imageUri={itemData.item.album.images[1].url}
-            onPress={() => { props.addSongHandler(itemData.item.uri) }}
-            isExplicit={itemData.item.explicit}
-        />
-    )
+    const renderSong = (itemData) => {
+        if (props.name) {
+            return (
+                <TouchableSong
+                    name={itemData.item.name}
+                    author={artistBuilder(itemData.item.artists)}
+                    imageUri={itemData.item.album.images[1].url}
+                    onPress={() => { props.addSongHandler(itemData.item.uri) }}
+                    isExplicit={itemData.item.explicit}
+                />
+            )
+        } else {
+            return (
+                <TouchableSong
+                    name={itemData.item.track.name}
+                    author={artistBuilder(itemData.item.track.artists)}
+                    imageUri={itemData.item.track.album.images[1].url}
+                    onPress={() => { props.addSongHandler(itemData.item.track.uri) }}
+                    isExplicit={itemData.item.track.explicit}
+                />
+            )
+        }
+    }
 
 
     return (
@@ -49,11 +64,17 @@ const AddSongScreenUI = props => {
                 <View style={styles.listContainer}>
                     <FlatList
                         keyExtractor={(item) => item.id}
-                        data={props.searchResults}
+                        data={props.tracks}
                         renderItem={renderSong}
                         numColumns={1}
                     />
                 </View>
+                <CustomButton
+                    title={'Home'}
+                    style={styles.backButton}
+                    onPress={props.backHandler}
+                    textStyle={styles.backText}
+                />
             </View>
         </TouchableWithoutFeedback>
     )

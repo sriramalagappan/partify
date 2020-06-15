@@ -15,6 +15,7 @@ const AddSongScreen = props => {
 
     // Redux Store State Variables
     const searchResults = useSelector(state => state.songs.searchResults)
+    const recentTracks = useSelector(state => state.songs.recentTracks)
     const playlistID = useSelector(state => state.room.playlistID)
     const userType = useSelector(state => state.room.userType)
     const roomID = useSelector(state => state.room.roomID)
@@ -24,6 +25,11 @@ const AddSongScreen = props => {
     const position = props.navigation.getParam('position')
 
     const dispatch = useDispatch()
+
+    // componentDidMount
+    useEffect(() => {
+        dispatch(songActions.getRecentSongs())
+    }, [])
 
     // toggle dispatch for finding song from Spotify
     const toggleSearch = useCallback(async (name) => {
@@ -75,13 +81,20 @@ const AddSongScreen = props => {
         addSongHandler = addSongAdminHandler
     }
 
+    const backHandler = () => {
+        props.navigation.pop();
+    }
+
+    const tracks = (name) ? searchResults : recentTracks
+
     return (
         <AddSongScreenUI
             nameChangeHandler={nameChangeHandler}
             name={name}
             isLoading={isLoading}
-            searchResults={searchResults}
+            tracks={tracks}
             addSongHandler={addSongHandler}
+            backHandler={backHandler}
         />
     )
 }

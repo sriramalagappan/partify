@@ -28,8 +28,19 @@ export default StyleSheet.create({
     },
     
     listContainer: {
-        height: '85%',
+        height: '78%',
         borderBottomWidth: 2,
         borderBottomColor: 'white'
+    },
+
+    backButton: {
+        marginTop: 7,
+        width: 60,
+        height: 40,
+        backgroundColor: 'black'
+    },
+
+    backText: {
+        color: '#444444'
     }
 })
