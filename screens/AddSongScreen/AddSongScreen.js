@@ -47,7 +47,7 @@ const AddSongScreen = props => {
         setName(input)
         // clear timer if initalized
         if (timer) { clearTimeout(timer) }
-        // dont make a search request is input is reset/blank
+        // dont make a search request if input is reset/blank
         if (input) {
             // replace space with %20 to allow for correct url format when sending request after user stops typing
             setTimer(setTimeout(() => { toggleSearch(input.replace(/ /g, '%20')) }, 500))

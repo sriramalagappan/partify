@@ -3,7 +3,7 @@ import credentials from '../misc/secrets'
 import { Alert } from 'react-native'
 
 const scopesArr = ['user-modify-playback-state', 'user-read-currently-playing', 'user-read-playback-state', 'user-library-modify',
-  'user-library-read', 'playlist-read-private', 'playlist-read-collaborative', 'playlist-modify-public',
+  'user-library-read', 'playlist-read-private', 'playlist-modify-public', 'user-read-private',
   'playlist-modify-private', 'user-read-recently-played', 'user-top-read'];
 const scopes = scopesArr.join(' ');
 

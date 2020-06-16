@@ -26,7 +26,7 @@ export const logoutUser = () => {
  * 
  * display_name: The name displayed on the user profile. Null if not available
  * 
- * followers: Object containing info of the user's Spotify followers
+ * level: The users Spotify subscription level
  */
 export const initUser = () => {
     return async dispatch => {
@@ -41,7 +41,7 @@ export const initUser = () => {
                 },
             });
             const resData = await response.json()
-            dispatch({ type: INIT_USER, userID: resData.id, display_name: resData.display_name, followers: resData.followers })
+            dispatch({ type: INIT_USER, userID: resData.id, display_name: resData.display_name, level: resData.product })
         } catch (err) {
             console.error(err);
         }

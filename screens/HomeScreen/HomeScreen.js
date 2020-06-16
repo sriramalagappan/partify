@@ -10,9 +10,16 @@ import firebase from 'firebase';
 const HomeScreen = props => {
 
     // Stateful Variables
-    const [roomName, setRoomName] = useState('')
+    const [name, setName] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
+    const [timer, setTimer] = useState(null)
+
+    // Modal Stateful Variables
+    const [visible, setVisible] = useState(false)
+    const [password, setPassword] = useState('')
+    const [roomPassword, setRoomPassword] = useState('')
+    const [roomName, setRoomName] = useState('')
 
     // Redux Store State Variables
     const display_name = useSelector(state => state.user.display_name)
@@ -21,6 +28,8 @@ const HomeScreen = props => {
     const userType = useSelector(state => state.room.userType)
     const playlistID = useSelector(state => state.room.playlistID)
     const userRooms = useSelector(state => state.room.userRooms)
+    const level = useSelector(state => state.user.level)
+    const matches = useSelector(state => state.room.matches)
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -56,26 +65,53 @@ const HomeScreen = props => {
         joinedRoom()
     }, [roomID, userType, playlistID])
 
-    // Search input handler that updates roomName state
-    const searchInputHandler = input => {
-        setRoomName(input)
-    }
-
-    // navigate user to create room screen when button is pressed
-    const createRoomHandler = () => {
-        props.navigation.navigate('Create')
-    }
-
-    // attempt to join a room given roomName in searchbar
-    const joinRoomHandler = useCallback(async () => {
-        setIsLoading(true)
+    const toggleRoomSearch = useCallback(async (name) => {
         try {
-            await dispatch(roomActions.joinRoom(roomName, userID))
+            await dispatch(roomActions.searchRooms(name, userID))
         } catch (err) {
             console.log(err)
         }
         setIsLoading(false)
-    }, [dispatch, isLoading])
+    }, [dispatch])
+
+    // Search input handler that updates name state
+    const searchInputHandler = input => {
+        setName(input)
+        if (timer) { clearTimeout(timer) }
+        // dont make a search request if input is reset/blank
+        if (input) {
+            setIsLoading(true)
+            // replace space with %20 to allow for correct url format when sending request after user stops typing
+            setTimer(setTimeout(() => { toggleRoomSearch(input) }, 500))
+        } else {
+            setIsLoading(false)
+        }
+    }
+
+    // navigate user to create room screen when button is pressed
+    const createRoomHandler = () => {
+        // Verify that user has a premium account
+        if (level === 'premium') {
+            props.navigation.navigate('Create')
+        } else {
+            Alert.alert('Premium Account Required', 'Sorry, creating a room is a Spotify premium feature. Please upgrade or change accounts', [{ text: 'Okay' }])
+        }
+    }
+
+    const joinRoomHandler = (password, name) => {
+        // display modal for password if password is required
+        if (password) {
+            setRoomPassword(password)
+            setRoomName(name)
+            setVisible(true)
+        } else {
+            try {
+                dispatch(roomActions.joinRoom(name, userID))
+            } catch (err) {
+                console.log(err)
+            }
+        }
+    }
 
     const toggleRejoinRoom = useCallback((roomID, userType) => {
         dispatch(roomActions.rejoinRoom(roomID, userType))
@@ -83,11 +119,7 @@ const HomeScreen = props => {
 
     // attempt to rejoin a room
     const rejoinRoomHandler = (roomID, userType, time) => {
-        if (Date.now() - time < 63000 || userType === 'host') {
-            toggleRejoinRoom(roomID, userType)
-        } else {
-            Alert.alert('Room is Offline', 'The room is currently offline. Please refresh by swiping down and try to join the room again', [{ text: 'Okay' }])
-        }
+        toggleRejoinRoom(roomID, userType)
     }
 
     // Delete all data in async storage, delete state data, logout user from firebase, and route to auth screen
@@ -131,10 +163,32 @@ const HomeScreen = props => {
         setRefreshing(false)
     }, [dispatch, refreshing])
 
+    const passwordHandler = (input) => {
+        setPassword(input)
+    }
+
+    const closeHandler = () => {
+        setVisible(false)
+        setPassword('')
+    }
+
+    const submitPasswordHandler = () => {
+        if (password === roomPassword) {
+            try {
+                setVisible(false)
+                dispatch(roomActions.joinRoom(roomName, userID))
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            Alert.alert('Incorrect Password', 'The password did not match. Please try again', [{ text: 'Okay' }])
+        }
+    }
+
     return (
         <HomeScreenUI
             display_name={(display_name) ? display_name : ''}
-            roomName={roomName}
+            name={name}
             searchInputHandler={searchInputHandler}
             logoutHandler={logoutHandler}
             createRoomHandler={createRoomHandler}
@@ -144,6 +198,12 @@ const HomeScreen = props => {
             rejoinRoomHandler={rejoinRoomHandler}
             refreshHandler={refreshHandler}
             refreshing={refreshing}
+            matches={matches}
+            visible={visible}
+            closeHandler={closeHandler}
+            password={password}
+            passwordHandler={passwordHandler}
+            submitPasswordHandler={submitPasswordHandler}
         />
     )
 }

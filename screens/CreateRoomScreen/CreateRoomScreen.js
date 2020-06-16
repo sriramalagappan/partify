@@ -20,6 +20,7 @@ const CreateRoomScreen = props => {
     let devices = useSelector(state => state.devices.devices)
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
+    const displayName = useSelector(state => state.user.displayName)
 
     // falsey check for devices
     if (devices == false) {
@@ -107,7 +108,7 @@ const CreateRoomScreen = props => {
         }
 
         if (isValid) {
-            dispatch(roomActions.initRoom(roomName, password, device, userID))
+            dispatch(roomActions.initRoom(roomName, password, device, userID, displayName))
         }
     }
 

@@ -15,7 +15,7 @@ export default StyleSheet.create({
         color: 'white',
         fontSize: 25,
         fontFamily: 'bold',
-        marginTop: (height / 25)
+        marginTop: (height / 15)
     },
 
     errorText: {

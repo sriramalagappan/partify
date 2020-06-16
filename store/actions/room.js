@@ -12,6 +12,7 @@ export const INIT_ROOM = 'INIT_ROOM'
 export const GET_ROOMS = 'GET_ROOMS'
 export const RESET_ROOM = 'RESET_ROOM'
 export const SET_INDEX = 'SET_INDEX'
+export const SEARCH_ROOMS = 'SEARCH_ROOMS'
 
 /**
  * Removes room information from the state
@@ -27,7 +28,7 @@ export const resetRoom = () => {
  * @param {*} device Information about the device used by the room for Spotify playback
  * @param {*} userID Spotify user ID
  */
-export const initRoom = (roomName, password, device, userID) => {
+export const initRoom = (roomName, password, device, userID, displayName) => {
     return async dispatch => {
         try {
             // first create a new spotify playlist that will be used for the room
@@ -41,7 +42,8 @@ export const initRoom = (roomName, password, device, userID) => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: 'Partify: ' + roomName
+                    name: 'Partify: ' + roomName,
+                    description: 'Playlist used by Partify. Please do not delete this room manually'
                 })
             });
 
@@ -62,6 +64,7 @@ export const initRoom = (roomName, password, device, userID) => {
                     uri: playlistResData.uri,
                     playlistID: playlistResData.id,
                     hostID: userID,
+                    hostUsername: displayName,
                     index: 0,
                 })
             })
@@ -205,6 +208,48 @@ export const getUserRooms = (userID) => {
                 type: GET_ROOMS,
                 userRooms
             })
+        } catch (err) {
+            console.log(err)
+        }
+    }
+}
+
+export const searchRooms = (name, userID) => {
+    return async dispatch => {
+        try {
+            await checkTokenFirebase()
+            const fbToken = await getUserData('fb_accessToken')
+            const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms.json?auth=${fbToken}`)
+            const roomData = await rooms.json()
+
+            const matches = []
+
+            for (const key in roomData) {
+                if (roomData[key].roomName.includes(name)) {
+                    // check if user is already in the room (then dont store in matches)
+                    let valid = true;
+                    // check if user isn't host
+                    if (roomData[key].hostID === userID) {
+                        valid = false;
+                    }
+
+                    // check if user isn't admin of the room
+                    if (valid) {
+                        const { admins } = roomData[key]
+                        if (admins) {
+                            if (admins.indexOf(userID) !== -1) {
+                                valid = false;
+                            }
+                        }
+                    }
+
+                    if (valid) {
+                        matches.push({ name: roomData[key].roomName, time: roomData[key].currentTime, hostUsername: roomData[key].hostUsername, password: roomData[key].password, id: key })
+                    }
+                }
+            }
+
+            dispatch({ type: SEARCH_ROOMS, matches })
         } catch (err) {
             console.log(err)
         }

@@ -1,4 +1,4 @@
-import { INIT_ROOM, RESET_ROOM, GET_ROOMS, SET_INDEX } from '../actions/room'
+import { INIT_ROOM, RESET_ROOM, GET_ROOMS, SET_INDEX, SEARCH_ROOMS } from '../actions/room'
 
 const initialState = {
     roomID: null,
@@ -10,6 +10,7 @@ const initialState = {
     userRooms: [],
     fetchedRooms: false,
     index: 0,
+    matches: [],
 }
 
 const roomReducer = (state = initialState, action) => {
@@ -31,6 +32,12 @@ const roomReducer = (state = initialState, action) => {
                 ...state,
                 userRooms: action.userRooms,
                 fetchedRooms: true,
+            }
+        }
+        case SEARCH_ROOMS: {
+            return {
+                ...state,
+                matches: action.matches
             }
         }
         case SET_INDEX: {

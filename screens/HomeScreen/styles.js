@@ -84,7 +84,7 @@ export default StyleSheet.create({
 
     roomText: {
         color: '#a8a8a8',
-        marginLeft: width/15.2,
+        marginLeft: width / 15.2,
         fontSize: 18,
         textAlign: 'center',
         fontFamily: 'regular'
@@ -92,20 +92,20 @@ export default StyleSheet.create({
 
     roomOnline: {
         color: colors.primary,
-        marginRight: width/15.2,
+        marginRight: width / 15.2,
         fontSize: 15,
         textAlign: 'center',
         fontFamily: 'medium'
-    }, 
+    },
 
     roomOffline: {
         color: '#444444',
-        marginRight: width/15.2,
+        marginRight: width / 15.2,
         fontSize: 15,
         textAlign: 'center',
         fontFamily: 'medium'
-    }, 
-    
+    },
+
     roomContainer: {
         marginVertical: 1,
     },
@@ -123,9 +123,86 @@ export default StyleSheet.create({
         fontSize: 15,
         textAlign: 'center',
         fontFamily: 'medium'
-    }, 
+    },
 
     rightRoomText: {
         flexDirection: 'row'
+    },
+
+    foundText: {
+        color: '#a8a8a8',
+        fontSize: 18,
+        textAlign: 'center',
+        fontFamily: 'regular',
+        marginTop: 10,
+    },
+
+    roomSearchButton: {
+        backgroundColor: '#222222',
+        width: width,
+        borderRadius: 0,
+        justifyContent: 'space-between',
+        height: 50,
+        alignItems: 'center',
+        flexDirection: 'row'
+    },
+
+    modalContainer: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.62)'
+    },
+
+    modal: {
+        marginLeft: 30,
+        marginRight: 30,
+        ...Platform.select({
+            ios: {
+                backgroundColor: '#303942',
+                borderRadius: 10,
+                minWidth: 300,
+            },
+            android: {
+                backgroundColor: '#303942',
+                elevation: 24,
+                minWidth: 280,
+                borderRadius: 5,
+            },
+        }),
+    },
+
+    modalBody: {
+        ...Platform.select({
+            ios: {
+                padding: 10,
+            },
+            android: {
+                padding: 24,
+            },
+        }),
+        alignItems: 'center'
+    },
+
+    modalTitle: {
+        fontFamily: 'bold',
+        fontSize: 20,
+        marginTop: 10,
+        textAlign: 'center',
+        marginBottom: 5,
+        color: '#a8a8a8'
+    },
+
+    modalButton: {
+        backgroundColor: '#303942',
+        width: 60,
+        height: 35,
+    },
+
+    modalInput: {
+        borderColor: '#a8a8a8'
     }
 })

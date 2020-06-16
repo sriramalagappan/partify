@@ -25,7 +25,6 @@ const CreateRoomScreenUI = props => (
             <Input
                 placeholder={'Room Name'}
                 maxLength={30}
-                error={''}
                 value={props.roomName}
                 onChangeText={props.roomNameHandler}
                 error={props.nameError}
@@ -33,7 +32,6 @@ const CreateRoomScreenUI = props => (
             <Input
                 placeholder={'Password (optional)'}
                 maxLength={30}
-                error={''}
                 isPassword={true}
                 value={props.passowordHandler}
                 onChangeText={props.passowordHandler}
