@@ -19,10 +19,10 @@ const HomeScreen = props => {
     const [visible, setVisible] = useState(false)
     const [password, setPassword] = useState('')
     const [roomPassword, setRoomPassword] = useState('')
-    const [roomName, setRoomName] = useState('')
+    const [roomKey, setRoomKey] = useState('')
 
     // Redux Store State Variables
-    const display_name = useSelector(state => state.user.display_name)
+    const displayName = useSelector(state => state.user.displayName)
     const userID = useSelector(state => state.user.userID)
     const roomID = useSelector(state => state.room.roomID)
     const userType = useSelector(state => state.room.userType)
@@ -54,12 +54,14 @@ const HomeScreen = props => {
     useEffect(() => {
         const joinedRoom = async () => {
             if (roomID && playlistID) {
+                // reset name
                 await dispatch(songActions.getPlaylistSongs(playlistID))
                 if (userType === 'host') {
                     props.navigation.navigate('Host')
                 } else if (userType === 'admin') {
                     props.navigation.navigate('Admin')
                 }
+                setTimeout(() => { setName('') }, 500)
             }
         }
         joinedRoom()
@@ -98,15 +100,15 @@ const HomeScreen = props => {
         }
     }
 
-    const joinRoomHandler = (password, name) => {
+    const joinRoomHandler = (password, key) => {
         // display modal for password if password is required
         if (password) {
             setRoomPassword(password)
-            setRoomName(name)
+            setRoomKey(key)
             setVisible(true)
         } else {
             try {
-                dispatch(roomActions.joinRoom(name, userID))
+                dispatch(roomActions.joinRoom(key, userID, displayName))
             } catch (err) {
                 console.log(err)
             }
@@ -176,7 +178,7 @@ const HomeScreen = props => {
         if (password === roomPassword) {
             try {
                 setVisible(false)
-                dispatch(roomActions.joinRoom(roomName, userID))
+                dispatch(roomActions.joinRoom(roomKey, userID, displayName))
             } catch (err) {
                 console.log(err)
             }
@@ -187,7 +189,7 @@ const HomeScreen = props => {
 
     return (
         <HomeScreenUI
-            display_name={(display_name) ? display_name : ''}
+            display_name={(displayName) ? displayName : ''}
             name={name}
             searchInputHandler={searchInputHandler}
             logoutHandler={logoutHandler}

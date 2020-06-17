@@ -90,51 +90,41 @@ export const initRoom = (roomName, password, device, userID, displayName) => {
 
 /**
  * Join a room for the first time
- * @param {*} roomName Name of the room to join
+ * @param {*} key Firebase key of the room to join
  * @param {*} userID Spotify user ID of the person joining
  */
-export const joinRoom = (roomName, userID) => {
+export const joinRoom = (key, userID, name) => {
     return async dispatch => {
         try {
             await checkTokenFirebase()
             const fbToken = await getUserData('fb_accessToken')
-            const rooms = await fetch(`https://partify-58cd0.firebaseio.com/rooms.json?auth=${fbToken}`)
-            const roomData = await rooms.json()
+            const response = await fetch(`https://partify-58cd0.firebaseio.com/rooms/${key}.json?auth=${fbToken}`)
+            const roomData = await response.json()
 
-            //TODO
-            let userType = 'admin';
+            const { roomName, device, uri, playlistID, index } = roomData
 
-            for (const key in roomData) {
-                if (roomData[key].roomName === roomName) {
-                    if (roomData[key].hostID === userID) {
-                        userType = 'host'
-                    } else {
-                        // add user to the list of admins if they are not already in it
-                        const admins = (roomData[key].admins) ? roomData[key].admins : []
-                        if (admins.indexOf(userID) === -1) {
-                            admins.push(userID)
-                            await fetch(`https://partify-58cd0.firebaseio.com/rooms/${key}.json?auth=${fbToken}`, {
-                                method: 'PATCH',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({ admins })
-                            });
-                        }
-                    }
+            // add user as member of the room
+            const users = (roomData.users) ? roomData.users : []
+            users.push({id: userID, name, userType: 'member' })
+            await fetch(`https://partify-58cd0.firebaseio.com/rooms/${key}.json?auth=${fbToken}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ users })
+            });
 
-                    dispatch({
-                        type: INIT_ROOM,
-                        roomName,
-                        device: roomData[key].device,
-                        roomID: key,
-                        uri: roomData[key].uri,
-                        playlistID: roomData[key].playlistID,
-                        userType,
-                        index: roomData[key].index
-                    })
-                }
-            }
+
+            dispatch({
+                type: INIT_ROOM,
+                roomName,
+                device,
+                roomID: key,
+                uri: uri,
+                playlistID: playlistID,
+                userType: 'member',
+                index: index,
+            })  
         } catch (err) {
             console.log(err)
         }
@@ -214,6 +204,11 @@ export const getUserRooms = (userID) => {
     }
 }
 
+/**
+ * Search for rooms in the database that match the given parameter (name)
+ * @param {*} name User provided name of a room they're searching for
+ * @param {*} userID Spotify user ID
+ */
 export const searchRooms = (name, userID) => {
     return async dispatch => {
         try {

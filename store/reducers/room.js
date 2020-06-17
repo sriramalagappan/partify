@@ -57,6 +57,7 @@ const roomReducer = (state = initialState, action) => {
                 userType: '',
                 fetchedRooms: false,
                 index: 0,
+                matches: [],
             }
         }
         default: {

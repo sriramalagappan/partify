@@ -107,7 +107,7 @@ const HomeScreenUI = props => (
                             <View style={{ alignItems: 'center' }}>
                                 {props.matches.map((room) => (
                                     <View style={styles.roomContainer} key={room.id}>
-                                        <TouchableOpacity onPress={() => { props.joinRoomHandler(room.password, room.name) }}>
+                                        <TouchableOpacity onPress={() => { props.joinRoomHandler(room.password, room.id) }}>
                                             <View style={styles.roomSearchButton}>
                                                 <Text style={styles.roomText}> {room.name} </Text>
                                                 <View style={styles.rightRoomText}>
