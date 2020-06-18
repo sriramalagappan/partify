@@ -74,7 +74,27 @@ const AdminPlayerScreen = props => {
         }
     }, [roomID])
 
-    // wait for response and handle it
+
+    // If a request is sent, set a timeout for 3 seconds. If a response is not heard in that
+    // time frame, cancel request and let user know
+    useEffect(() => {
+        if (sentRequest) {
+            const timer = setTimeout(async () => {
+                // check sent request again when script runs in 3 seconds
+                const check = await adminActions.checkRequest(roomID, userID)
+                console.log("Check: " + check)
+                if (!check) {
+                    Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
+                    dispatch(adminActions.clearMessage(roomID))
+                }
+            }, 3000)
+        }
+    }, [sentRequest])
+
+    /**
+     * Function that takes new messages from Firebase and determines what action to take based on that message
+     * @param {*} data contents of the message
+     */
     const responseHandler = (data) => {
         if (data && data.val()) {
             const to = data.val().to
@@ -102,32 +122,22 @@ const AdminPlayerScreen = props => {
         }
     }
 
-    // route to add song screen if button pressed
+    /**
+     * route to add song screen if button pressed
+     */
     const addSongHandler = () => {
         props.navigation.navigate({ routeName: 'Add', params: { position: length } })
     }
 
-    // delete the given song from the queue
+    /**
+     * delete the given song from the queue
+     * @param {*} songID Spotify song ID
+     * @param {*} position position in the Spotify playlist
+     */
     const deleteSongHandler = async (songID, position) => {
         //send delete request to host and stop looping
         dispatch(adminActions.sendDeleteRequest(songID, playlistID, (position + index), userID, roomID))
     }
-
-    // If a request is sent, set a timeout for 3 seconds. If a response is not heard in that
-    // time frame, cancel request and let user know
-    useEffect(() => {
-        if (sentRequest) {
-            const timer = setTimeout(async () => {
-                // check sent request again when script runs in 3 seconds
-                const check = await adminActions.checkRequest(roomID, userID)
-                console.log("Check: " + check)
-                if (!check) {
-                    Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
-                    dispatch(adminActions.clearMessage(roomID))
-                }
-            }, 3000)
-        }
-    }, [sentRequest])
 
     return (
         <AdminPlayerScreenUI

@@ -29,7 +29,9 @@ const AuthScreen = props => {
         }
     }, [userID])
 
-    // login handler (attempt to login to spotify)
+    /**
+     * login handler (attempt to login to spotify)
+     */
     const loginHandler = async () => {
         const authCode = await getAuthorizationCode()
         if (authCode) {

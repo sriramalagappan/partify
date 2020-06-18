@@ -1,3 +1,5 @@
+// Song component that displays image, title, and artist(s)
+
 import React from 'react'
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native'
 import Swipeable from 'react-native-gesture-handler/Swipeable';

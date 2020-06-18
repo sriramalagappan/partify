@@ -1,3 +1,8 @@
+/*
+ * admin.js
+ * Actions used by admin-level users in room to send messages and update inforamtion on Firebase
+*/
+
 import checkTokenFirebase from '../../authentication/firebase_check'
 import getUserData from '../../misc/getUserData'
 

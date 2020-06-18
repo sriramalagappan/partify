@@ -1,6 +1,7 @@
+// Circular button that should be used for any add functionality
+
 import React from 'react'
 import { View, StyleSheet, TouchableOpacity } from 'react-native'
-
 
 const AddButton = props => {
 

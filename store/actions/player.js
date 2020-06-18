@@ -1,3 +1,8 @@
+/*
+ * player.js
+ * Actions used by hosts to control Spotify playblack
+*/
+
 import getUserData from '../../misc/getUserData'
 import checkToken from '../../authentication/spotify_check'
 

@@ -67,6 +67,10 @@ const HomeScreen = props => {
         joinedRoom()
     }, [roomID, userType, playlistID])
 
+    /**
+     * search through Firebase for room names that match the given input 
+     * @param name a string
+     */
     const toggleRoomSearch = useCallback(async (name) => {
         try {
             await dispatch(roomActions.searchRooms(name, userID))
@@ -76,7 +80,10 @@ const HomeScreen = props => {
         setIsLoading(false)
     }, [dispatch])
 
-    // Search input handler that updates name state
+    /**
+     * Search input handler that updates name state and sends search request after user is done typing
+     * @param {*} input a string
+     */
     const searchInputHandler = input => {
         setName(input)
         if (timer) { clearTimeout(timer) }
@@ -90,7 +97,9 @@ const HomeScreen = props => {
         }
     }
 
-    // navigate user to create room screen when button is pressed
+    /**
+     * navigate user to create room screen when button is pressed
+     */
     const createRoomHandler = () => {
         // Verify that user has a premium account
         if (level === 'premium') {
@@ -100,6 +109,11 @@ const HomeScreen = props => {
         }
     }
 
+    /**
+     * Get room information to allow user to join the given room
+     * @param {*} password password for the room
+     * @param {*} key Firebase ID of the room
+     */
     const joinRoomHandler = (password, key) => {
         // display modal for password if password is required
         if (password) {
@@ -115,16 +129,28 @@ const HomeScreen = props => {
         }
     }
 
+    /**
+     * Send request to rejoin the room
+     *
+     * @param roomID Firebase ID of the room
+     * @param userType a string (user level in the room the user is joining)
+     */
     const toggleRejoinRoom = useCallback((roomID, userType) => {
         dispatch(roomActions.rejoinRoom(roomID, userType))
     })
 
-    // attempt to rejoin a room
-    const rejoinRoomHandler = (roomID, userType, time) => {
+    /**
+     * Attempt to rejoin a room
+     * @param {*} roomID Firebase ID of the room
+     * @param {*} userType a string (user level in the room the user is joining)
+     */
+    const rejoinRoomHandler = (roomID, userType) => {
         toggleRejoinRoom(roomID, userType)
     }
 
-    // Delete all data in async storage, delete state data, logout user from firebase, and route to auth screen
+    /**
+     * Log the user out
+     */
     const logoutHandler = async () => {
         // Delete async data
         const keys = await AsyncStorage.getAllKeys()
@@ -154,6 +180,9 @@ const HomeScreen = props => {
         props.navigation.replace('Auth')
     }
 
+    /**
+     * Send request to get all the user rooms when user refreshes manually 
+     */
     const refreshHandler = useCallback(async () => {
         setRefreshing(true)
         try {
@@ -165,15 +194,25 @@ const HomeScreen = props => {
         setRefreshing(false)
     }, [dispatch, refreshing])
 
+    /**
+     * update password state
+     * @param {*} input a string
+     */
     const passwordHandler = (input) => {
         setPassword(input)
     }
 
+    /**
+     * handler when user touches outside of modal
+     */
     const closeHandler = () => {
         setVisible(false)
         setPassword('')
     }
 
+    /**
+     * Check if passwords match and route if true, otherwise send alert
+     */
     const submitPasswordHandler = () => {
         if (password === roomPassword) {
             try {

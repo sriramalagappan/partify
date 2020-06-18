@@ -1,3 +1,5 @@
+// Button to be used in a header
+
 import React from 'react';
 import { Platform } from 'react-native';
 import { HeaderButton } from 'react-navigation-header-buttons';

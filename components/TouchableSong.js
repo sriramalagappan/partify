@@ -1,3 +1,5 @@
+// Song button component that displays image, title, and artist(s)
+
 import React from 'react'
 import { View, Text, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native'
 

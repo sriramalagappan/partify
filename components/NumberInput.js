@@ -1,4 +1,4 @@
-// An input field that should be used when wanting the user to only input numbers
+// An input field that should be used when handling numbers
 
 import React from "react"
 import { TextInput, StyleSheet } from "react-native"

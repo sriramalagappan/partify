@@ -1,3 +1,5 @@
+// Component that displays active Spotify devices
+
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native'
 import colors from '../constants/Colors'

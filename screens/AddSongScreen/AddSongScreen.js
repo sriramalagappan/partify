@@ -31,7 +31,9 @@ const AddSongScreen = props => {
         dispatch(songActions.getRecentSongs())
     }, [])
 
-    // toggle dispatch for finding song from Spotify
+    /**
+     * toggle dispatch for finding song from Spotify
+     */
     const toggleSearch = useCallback(async (name) => {
         setIsLoading(true)
         try {
@@ -42,7 +44,10 @@ const AddSongScreen = props => {
         setIsLoading(false)
     }, [dispatch])
 
-    // update song name and toggle dispatch whenever field changes
+    /**
+     * update song name and toggle dispatch whenever field changes
+     * @param {*} input a string
+     */
     const nameChangeHandler = (input) => {
         setName(input)
         // clear timer if initalized
@@ -54,7 +59,10 @@ const AddSongScreen = props => {
         }
     }
 
-    // if user is the host, add song and send alert that routes user back if successful
+    /**
+     * host action that adds a song and sends an alert that routes user back if successful
+     * @param {*} songID Spotify song ID
+     */
     const addSongHostHandler = async (songID) => {
         // correctly format songID
         const formattedID = songID.replace(/:/g, '%3A')
@@ -62,6 +70,7 @@ const AddSongScreen = props => {
         if (!errResponse) {
             // update local version of playlist
             dispatch(songActions.getPlaylistSongs(playlistID))
+            // tell other devices in room to update
             await hostActions.updateResponse(roomID)
             Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
         } else {
@@ -69,22 +78,30 @@ const AddSongScreen = props => {
         }
     }
 
-    // if user is an admin, send the request to the host phone and route back if successful
+    /**
+     * admin action that sends a message to Firebase asking the host to add the song
+     * @param {*} songID Spotify song ID
+     */
     const addSongAdminHandler = async (songID) => {
         dispatch(adminActions.sendAddSongRequest(songID, roomID, userID, position))
     }
 
+    /**
+     * Route the user back to the previous screen
+     */
+    const backHandler = () => {
+        props.navigation.pop();
+    }
 
+    // Select add song handler based on user type
     let addSongHandler = addSongHostHandler
 
     if (userType === 'admin') {
         addSongHandler = addSongAdminHandler
     }
 
-    const backHandler = () => {
-        props.navigation.pop();
-    }
 
+    // determine which tracks to display based on whether the input field is filled or not 
     const tracks = (name) ? searchResults : recentTracks
 
     return (
