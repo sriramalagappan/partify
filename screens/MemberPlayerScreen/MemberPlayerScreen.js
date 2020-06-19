@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import MemberPlayerScreenUI from './AdminPlayerScreenUI'
+import MemberPlayerScreenUI from './MemberPlayerScreenUI'
 import * as songActions from '../../store/actions/songs'
 import * as roomActions from '../../store/actions/room'
 import * as adminActions from '../../store/actions/admin'

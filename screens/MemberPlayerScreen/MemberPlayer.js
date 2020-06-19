@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native'
 import AddButton from '../../components/AddButton'
 import { Entypo } from '@expo/vector-icons'
 
-const AdminPlayer = props => {
+const MemberPlayer = props => {
 
     return (
         <View style={styles.player}>
@@ -42,4 +42,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default AdminPlayer
+export default MemberPlayer

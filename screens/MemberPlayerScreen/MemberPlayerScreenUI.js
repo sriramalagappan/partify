@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import TextTicker from 'react-native-text-ticker'
 import Song from '../../components/Song'
 import artistBuidler from '../../misc/artistBuilder'
-import AdminPlayer from './AdminPlayer'
+import MemberPlayer from './MemberPlayer'
 
 import styles from './styles'
 

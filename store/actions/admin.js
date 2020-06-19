@@ -10,7 +10,7 @@ export const SENT_REQUEST = 'SENT_REQUEST'
 export const CLEAR_REQUEST = 'CLEAR_REQUEST'
 
 /**
- * Send a request to the host phone through Firebase asking to add the given song
+ * Send a message to the host phone through Firebase asking to add the given song
  * @param {*} songID Spotify ID of the song to add
  * @param {*} roomID Firebase ID of the room to post the request to
  * @param {*} userID The user ID of the person sending the request
