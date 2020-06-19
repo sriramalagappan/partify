@@ -14,7 +14,7 @@ export const successResponse = async (customer, roomID) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ to: customer, from: 'host', type: 'SUCCESS', body: null })
+        body: JSON.stringify({ to: customer, from: 'HOST', type: 'SUCCESS', body: null })
     });
 }
 
@@ -26,7 +26,7 @@ export const failureResponse = async (customer, errMessage, roomID) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ to: customer, from: 'host', type: 'ERROR', body: errMessage })
+        body: JSON.stringify({ to: customer, from: 'HOST', type: 'ERROR', body: errMessage })
     });
 }
 
@@ -38,7 +38,7 @@ export const updateResponse = async (roomID) => {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ to: 'EVERYONE', from: 'host', type: 'UPDATE', body: 'sent' })
+        body: JSON.stringify({ to: 'EVERYONE', from: 'HOST', type: 'UPDATE', body: 'sent' })
     });
 }
 

@@ -3,16 +3,15 @@ import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createBottomTabNavigator } from 'react-navigation-tabs'
 import { Entypo } from '@expo/vector-icons'
+import device from '../misc/device'
 
 import StartupScreen from '../screens/StartupScreen/StartupScreen'
 import AuthScreen from '../screens/AuthScreen/AuthScreen'
 import HomeScreen from '../screens/HomeScreen/HomeScreen'
 import CreateRoomScreen from '../screens/CreateRoomScreen/CreateRoomScreen'
 import HostPlayerScreen from '../screens/HostPlayerScreen/HostPlayerScreen'
-import AddScreen from '../screens/AddSongScreen/AddSongScreen'
 import AdminPlayerScreen from '../screens/AdminPlayerScreen/AdminPlayerScreen'
-
-import device from '../misc/device'
+import MemberPlayerScreen from '../screens/MemberPlayerScreen/MemberPlayerScreen'
 import AddSongScreen from '../screens/AddSongScreen/AddSongScreen'
 
 const defaultNavOptions = {
@@ -64,8 +63,9 @@ const MainNavigator = createStackNavigator(
         },
         Create: CreateRoomScreen,
         Host: HostPlayerScreen,
-        Add: AddSongScreen,
         Admin: AdminPlayerScreen,
+        Member: MemberPlayerScreen,
+        Add: AddSongScreen,
     },
     {
         headerMode: 'none',

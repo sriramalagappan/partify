@@ -1,0 +1,35 @@
+This app allows a device to send messages to a message folder in a room which is read and processed by the other devices
+in the room. This file documents the parts of a message and the types of messages sent
+
+___________________________________________________________________________________________________________________________
+
+Message Structure: 
+
+The message is divided into 4 parts:
+
+to: An identifier coorelating to the intended recipient of the message
+    If the message is to be read by just one person, send the Spotify user ID of the intended recipient
+    If the message is to be read by just the host, send message with the keyword: HOST
+    If the message is to be sent to every device in the room, send message with the keyword: EVERYONE
+
+from: The identifier coorelating to the user who sent the message
+    A Spotify ID indicates that it is to be read only by that user with the same ID
+    The keyword HOST indicates that the host of the room needs to read the message
+    The keyword EVERYONE indicates that everyone in the room needs to read the message
+
+type: A keyword that lets the recipient of the message know what the author wants done (keywords below)
+    ADD_SONG: Ask the device to add a song to the Spotify playlist (should always be the host phone) (song data in body)
+    DELETE_SONG: Ask the device to delete a song from the Spotfy playlist (should always be the host phone) 
+        (song data in body)
+    ERROR: Tell the device that their request failed
+    SUCCESS: Tell the device that their request succeeded
+    UPDATE: Update the local version of the playlist and the index in the playlist by doing those actions locally
+    UPDATE_REQUEST_SONGS: Update local version of request songs by sending an action to Firebase to get those songs
+
+body: An optional part of the message that contains any data relating to the keyword that the recipient needs
+    * For UPDATE and UPDATE_REQUEST_SONGS, the body is not necessary but is sent with filler data and 
+      deleted immideatly after it's read by at least one phone. This allows another update request to be sent again, 
+      filling the body up, which will trigger the listeners on all the phones in the room. They will delete the body 
+      again and allow the cycle to continue.
+
+

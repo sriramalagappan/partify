@@ -130,7 +130,7 @@ const HostPlayerScreen = props => {
             const from = data.val().from
             const type = data.val().type
             const body = data.val().body
-            if (to === 'host') {
+            if (to === 'HOST') {
                 if (type === 'ADD_SONG') {
                     const { songID, position } = body
                     // add the song to the playlist

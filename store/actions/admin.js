@@ -25,7 +25,7 @@ export const sendAddSongRequest = (songID, roomID, userID, position) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ from: userID, to: 'host', type: 'ADD_SONG', body: { songID, position } })
+            body: JSON.stringify({ from: userID, to: 'HOST', type: 'ADD_SONG', body: { songID, position } })
         });
 
         dispatch({ type: SENT_REQUEST })
@@ -103,7 +103,7 @@ export const sendDeleteRequest = (songID, playlistID, position, userID, roomID) 
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ from: userID, to: 'host', type: 'DELETE_SONG', body: { songID, position, playlistID } })
+            body: JSON.stringify({ from: userID, to: 'HOST', type: 'DELETE_SONG', body: { songID, position, playlistID } })
         });
 
         dispatch({ type: SENT_REQUEST })
