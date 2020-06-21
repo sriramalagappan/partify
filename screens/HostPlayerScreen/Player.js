@@ -87,7 +87,7 @@ const Player = props => {
             await dispatch(roomActions.setIndex(newIndex, roomID))
             await hostActions.updateResponse(roomID)
             await dispatch(songActions.getPlaylistSongs(playlistID))
-            // if a song is coming up, prepare for that by initializing the states
+            // if a song is coming up, prepare for that song by initializing the states
             if (props.next) {
                 setTime(Date.now())
                 setDelay(0)
