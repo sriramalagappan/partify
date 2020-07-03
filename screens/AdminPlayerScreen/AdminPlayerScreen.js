@@ -24,6 +24,8 @@ const AdminPlayerScreen = props => {
     const userID = useSelector(state => state.user.userID)
     const sentRequest = useSelector(state => state.admin.sentRequest)
 
+    let messageTimeout = null;
+
     const dispatch = useDispatch()
 
     // componentDidMount 
@@ -79,10 +81,9 @@ const AdminPlayerScreen = props => {
     // time frame, cancel request and let user know
     useEffect(() => {
         if (sentRequest) {
-            const timer = setTimeout(async () => {
+            messageTimeout = setTimeout(async () => {
                 // check sent request again when script runs in 3 seconds
                 const check = await adminActions.checkRequest(roomID, userID)
-                console.log("Check: " + check)
                 if (!check) {
                     Alert.alert('Error', 'We were unable to process your request. Please try again', [{ text: 'Okay' }])
                     dispatch(adminActions.clearMessage(roomID))
@@ -98,10 +99,11 @@ const AdminPlayerScreen = props => {
     const responseHandler = (data) => {
         if (data && data.val()) {
             const to = data.val().to
-            const from = data.val.from
+            const from = data.val().from
             const type = data.val().type
             const body = data.val().body
             if (to === userID) {
+                clearTimeout(messageTimeout)
                 if (type === 'SUCCESS') {
                     dispatch(songActions.getPlaylistSongs(playlistID))
                     adminActions.updateResponse(roomID, userID)

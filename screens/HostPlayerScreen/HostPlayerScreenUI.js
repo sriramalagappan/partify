@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, Easing, FlatList } from 'react-native'
+import { View, Text, Easing, FlatList, Modal, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import TextTicker from 'react-native-text-ticker'
 import Song from '../../components/Song'
 import artistBuidler from '../../misc/artistBuilder'
 import Player from './Player'
+import CustomButton from '../../components/CustomButton'
 
 import styles from './styles'
 
@@ -34,6 +35,41 @@ const HostPlayerScreenUI = props => {
                     height: 200,
                 }}
             />
+
+            {/* Modal */}
+
+            <Modal
+                visible={props.visible}
+                transparent={true}
+                onRequestClose={props.closeModal}
+                animationType={'fade'}
+            >
+                <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={props.closeModal}>
+                    <View style={styles.modal}>
+                        <View style={styles.modalBody}>
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Recommended Songs"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.submitPasswordHandler}
+                            />
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Members"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.submitPasswordHandler}
+                            />
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Home"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.routeHome}
+                            />
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+
             <TextTicker
                 style={styles.scrollingText}
                 duration={props.message.length * 300}
@@ -70,11 +106,14 @@ const HostPlayerScreenUI = props => {
                 />
             </View>
             <View style={styles.div} />
-            <Player 
+            <Player
                 addSongHandler={props.addSongHandler}
                 current={(props.currentTrack) ? props.currentTrack.track.uri : null}
-                duration={(props.currentTrack) ? props.currentTrack.track.duration_ms: null}
-                next={(props.nextTrack) ? props.nextTrack.track.uri : null }
+                duration={(props.currentTrack) ? props.currentTrack.track.duration_ms : null}
+                next={(props.nextTrack) ? props.nextTrack.track.uri : null}
+                nextDuration={(props.nextTrack) ? props.nextTrack.track.duration_ms : null}
+                displayModal={props.displayModal}
+                prevDuration={props.prevDuration}
             />
         </View>
     )

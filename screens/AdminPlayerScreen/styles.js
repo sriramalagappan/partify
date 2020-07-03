@@ -1,4 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native'
+import isIphoneX from '../../misc/device'
 
 export default StyleSheet.create({
     screen: {
@@ -29,7 +30,7 @@ export default StyleSheet.create({
     },
 
     listContainer: {
-        height: '50%',
+        height: (isIphoneX()) ? '50%' : '47%',
     },
 
     div: {

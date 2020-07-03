@@ -17,6 +17,8 @@ const HostPlayerScreen = props => {
     const [currentTrack, setCurrentTrack] = useState(null)
     const [nextTrack, setNextTrack] = useState(null)
     const [length, setLength] = useState(null)
+    const [visible, setVisible] = useState(false)
+    const [prevDuration, setPrevDuration] = useState(null)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -27,6 +29,7 @@ const HostPlayerScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
 
     const dispatch = useDispatch()
+
 
     // componentDidMount 
     useEffect(() => {
@@ -72,6 +75,13 @@ const HostPlayerScreen = props => {
     // update/filter track data
     useEffect(() => {
         if (tracksData) {
+            // store duration of song before index (for rewind functionality)
+            if (index > 0) {
+                if (tracksData[(index - 1)]) {
+                    setPrevDuration(tracksData[(index - 1)].track.duration_ms)
+                }
+            }
+
             // modify tracks by filtering out the previous songs
             setLength(tracksData.length)
             let i;
@@ -126,6 +136,7 @@ const HostPlayerScreen = props => {
      */
     const processMessage = async (data) => {
         if (data && data.val()) {
+            console.log('Message Recieved')
             const to = data.val().to
             const from = data.val().from
             const type = data.val().type
@@ -154,6 +165,28 @@ const HostPlayerScreen = props => {
         }
     }
 
+    /**
+     * Display modal when menu button is pressed
+     */
+    const displayModal = () => {
+        setVisible(true)
+    }
+
+    /**
+     * Close modal
+     */
+    const closeModal = () => {
+        setVisible(false)
+    }
+
+    /**
+     * Route user back to home scree
+     */
+    const routeHome = () => {
+        setVisible(false)
+        props.navigation.pop()
+    }
+
     return (
         <HostPlayerScreenUI
             addSongHandler={addSongHandler}
@@ -162,6 +195,11 @@ const HostPlayerScreen = props => {
             queueTracks={queueTracks}
             deleteSongHandler={deleteSongHandler}
             message={message}
+            visible={visible}
+            displayModal={displayModal}
+            closeModal={closeModal}
+            routeHome={routeHome}
+            prevDuration={prevDuration}
         />
     )
 }

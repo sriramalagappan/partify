@@ -56,7 +56,16 @@ export const getRecentSongs = () => {
                 },
             });
             const resData = await response.json()
-            dispatch({ type: RECENT, songs: resData.items })
+
+            let tracks = resData.items;
+
+            if (tracks) {
+                tracks = tracks.filter((track) => {
+                    return (track.track.uri !== "spotify:track:5WgA26cAKD4kxZ8JAHDvXe")
+                })
+            }
+
+            dispatch({ type: RECENT, songs: tracks })
         } catch (err) {
             console.log(err)
         }

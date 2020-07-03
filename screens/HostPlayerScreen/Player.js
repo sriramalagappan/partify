@@ -11,7 +11,6 @@ import * as songActions from '../../store/actions/songs'
 import * as roomActions from '../../store/actions/room'
 import * as hostActions from '../../store/actions/host'
 import * as deviceActions from '../../store/actions/devices'
-import useInterval from '../../misc/useInterval'
 import { Alert } from 'react-native'
 
 const Player = props => {
@@ -24,15 +23,11 @@ const Player = props => {
     const playlistURI = useSelector(state => state.room.uri)
     const position_ms = useSelector(state => state.player.position_ms)
 
-    // Timer states
-    const [time, setTime] = useState(0)
+    // Stateful Variables
     const [isActive, setIsActive] = useState(false)
-    const [delay, setDelay] = useState(0)
-    const [delayTime, setDelayTime] = useState(0)
-    const [songEnd, setSongEnd] = useState(false)
-    const [startedPlayback, setStartedPlayback] = useState(false)
+    const [timeoutID, setTimeoutID] = useState(null)
 
-    let interval;
+    let songTimeout = null;
 
     const dispatch = useDispatch()
 
@@ -40,65 +35,38 @@ const Player = props => {
     const toggleTimer = async () => {
         if (isActive) {
             await dispatch(playerActions.pausePlayback(deviceID))
-            setDelayTime(Date.now())
-            setIsActive(false)
-            clearInterval(interval)
+            clearTimeout(timeoutID)
         } else {
             const response = await deviceActions.checkDevice(deviceID)
             if (!response) {
                 Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
+            } else if (!props.current) {
+                Alert.alert('No Song to Play', 'Please add a song before attempting to play by clicking the plus button below and selecting a song.', [{ text: 'Okay' }])
             } else {
-                if (startedPlayback) {
-                    const newDelay = delay + (Date.now() - delayTime)
-                    setDelay(newDelay)
-                } else {
-                    setTime(Date.now())
-                    setDelay(0)
-                    setStartedPlayback(true)
-                }
                 await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index))
-                setIsActive(true)
+                songTimeout = setTimeout(() => { songEndHandler(index) }, (props.duration - position_ms))
+                setTimeoutID(songTimeout)
             }
         }
+        setIsActive(!isActive)
     }
 
-    // create a new background timer with each new song that listens for the end of a song
-    useEffect(() => {
-        if (startedPlayback && isActive) {
-            clearInterval(interval)
-            interval = setInterval(() => {
-                console.log('here')
-                const length = (Date.now() - time - delay)
-                if (time && (length > props.duration) && isActive) {
-                    setSongEnd(true)
-                    clearInterval(interval)
-                }
-            }, 500)
+    // reset all the states, update index, refresh the playlist, and prepare for the new song
+    const songEndHandler = async (currentIndex) => {
+        const newIndex = currentIndex + 1
+        clearTimeout(timeoutID)
+        // if a song is coming up, prepare for that song by starting next timeout
+        if (props.next) {
+            songTimeout = setTimeout(() => { songEndHandler(newIndex) }, (props.nextDuration))
+            setTimeoutID(songTimeout)
+        } else {
+            setIsActive(false)
+            await playerActions.silentPlayback(deviceID)
         }
-    }, [startedPlayback, isActive, time])
-
-    // Song Ending functionality that updates state and db
-    useEffect(() => {
-        // reset all the states, update index, refresh the playlist, and prepare for the new song
-        const songEndHandler = async () => {
-            setSongEnd(false)
-            clearInterval(interval)
-            const newIndex = index + 1
-            await dispatch(roomActions.setIndex(newIndex, roomID))
-            await hostActions.updateResponse(roomID)
-            await dispatch(songActions.getPlaylistSongs(playlistID))
-            // if a song is coming up, prepare for that song by initializing the states
-            if (props.next) {
-                setTime(Date.now())
-                setDelay(0)
-            } else {
-                setIsActive(false)
-            }
-        }
-        if (songEnd) {
-            songEndHandler()
-        }
-    }, [songEnd])
+        await dispatch(roomActions.setIndex(newIndex, roomID))
+        await hostActions.updateResponse(roomID)
+        await dispatch(songActions.getPlaylistSongs(playlistID))
+    }
 
     // fast forward functionality
     const skipNext = async () => {
@@ -109,20 +77,19 @@ const Player = props => {
             if (!response) {
                 Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
             } else {
-                clearInterval(interval)
                 const newIndex = index + 1
                 await dispatch(roomActions.setIndex(newIndex, roomID))
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex))
                 await hostActions.updateResponse(roomID)
                 await dispatch(songActions.getPlaylistSongs(playlistID))
-                // determine if playback should continue or stop 
+                clearTimeout(timeoutID)
                 if (props.next) {
-                    setTime(Date.now())
-                    setDelay(0)
                     setIsActive(true)
+                    songTimeout = setTimeout(() => { songEndHandler(newIndex) }, (props.nextDuration))
+                    setTimeoutID(songTimeout)
                 } else {
-                    startedPlayback(false)
                     setIsActive(false)
+                    await playerActions.silentPlayback(deviceID)
                 }
             }
         }
@@ -135,22 +102,26 @@ const Player = props => {
         if (!response) {
             Alert.alert('Device Not Active', 'The Spotify device is not active. To help us find your device, please open up your Spotify device and play any song in the background. Then come back to this app and try playing again. Sorry for the inconvenience.', [{ text: 'Okay' }])
         } else {
-            clearInterval(interval)
             // only allow if it is possible to go back, otherwise repeat first song
             if (index !== 0) {
                 const newIndex = index - 1
                 await dispatch(roomActions.setIndex(newIndex, roomID))
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, newIndex))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex))
                 await hostActions.updateResponse(roomID)
                 await dispatch(songActions.getPlaylistSongs(playlistID))
-                setTime(Date.now())
-                setDelay(0)
                 setIsActive(true)
+
+                // update timeout
+                clearTimeout(timeoutID)
+                songTimeout = setTimeout(() => { songEndHandler(newIndex) }, (props.prevDuration))
+                setTimeoutID(songTimeout)
             } else {
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, 0))
-                setTime(Date.now())
-                setDelay(0)
-                setIsActive(true)
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, 0))
+                await dispatch(playerActions.pausePlayback(deviceID))
+                setIsActive(false)
+
+                // update timeout
+                clearTimeout(timeoutID)
             }
         }
     }
@@ -186,7 +157,7 @@ const Player = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={props.addSongHandler}
+                    onPress={props.displayModal}
                 >
                     <Entypo name='menu' size={25} color={'white'} />
                 </AddButton>

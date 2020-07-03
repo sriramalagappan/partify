@@ -100,7 +100,6 @@ const AddSongScreen = props => {
         addSongHandler = addSongAdminHandler
     }
 
-
     // determine which tracks to display based on whether the input field is filled or not 
     const tracks = (name) ? searchResults : recentTracks
 

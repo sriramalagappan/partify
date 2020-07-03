@@ -54,12 +54,6 @@ export const pausePlayback = (deviceID) => {
             await checkToken()
             const accessToken = await getUserData('accessToken')
             const auth = 'Bearer ' + accessToken
-            await fetch(`https://api.spotify.com/v1/me/player/pause?device_id=${deviceID}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': auth,
-                },
-            });
 
             const response = await fetch('https://api.spotify.com/v1/me/player', {
                 method: 'GET',
@@ -71,11 +65,32 @@ export const pausePlayback = (deviceID) => {
             const resData = await response.json()
             const position_ms = resData.progress_ms
 
+            await silentPlayback(deviceID)
+
             dispatch({ type: SET_POSITION, position_ms })
         } catch (err) {
             console.log(err)
         }
     }
+}
+
+/**
+ * Keeps Spotify Device active by playing a silent song in the background
+ * @param {*} deviceID 
+ */
+export const silentPlayback = async (deviceID) => {
+    await checkToken()
+    const accessToken = await getUserData('accessToken')
+    const auth = 'Bearer ' + accessToken
+    await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceID}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': auth,
+        },
+        body: JSON.stringify({
+            "uris": ["spotify:track:5WgA26cAKD4kxZ8JAHDvXe"]
+        })
+    });
 }
 
 // /**

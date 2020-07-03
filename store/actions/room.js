@@ -105,7 +105,7 @@ export const joinRoom = (key, userID, name) => {
 
             // add user as member of the room
             const users = (roomData.users) ? roomData.users : []
-            users.push({id: userID, name, userType: 'member' })
+            users.push({ id: userID, name, userType: 'member' })
             await fetch(`https://partify-58cd0.firebaseio.com/rooms/${key}.json?auth=${fbToken}`, {
                 method: 'PATCH',
                 headers: {
@@ -124,7 +124,7 @@ export const joinRoom = (key, userID, name) => {
                 playlistID: playlistID,
                 userType: 'member',
                 index: index,
-            })  
+            })
         } catch (err) {
             console.log(err)
         }
@@ -181,15 +181,18 @@ export const getUserRooms = (userID) => {
                 }
                 // otherwise check if user is an admin of the room
                 else {
-                    const { admins } = roomData[key]
-                    if (admins) {
-                        if (admins.indexOf(userID) !== -1) {
-                            userType = 'admin'
+                    const { users } = roomData[key]
+                    if (users) {
+                        let i;
+                        for (i = 0; i < users.length; ++i) {
+                            if (users[i].id === userID) {
+                                userType = users[i].userType
+                            }
                         }
                     }
                 }
 
-                // if user was a member of the room, append their name to the list of all rooms
+                // if user was in the room, append their name to the list of all rooms
                 if (userType) {
                     userRooms.push({ name: roomData[key].roomName, time: roomData[key].currentTime, userType, roomID: key })
                 }
@@ -220,27 +223,14 @@ export const searchRooms = (name, userID) => {
             const matches = []
 
             for (const key in roomData) {
-                if (roomData[key].roomName.includes(name)) {
-                    // check if user is already in the room (then dont store in matches)
-                    let valid = true;
-                    // check if user isn't host
-                    if (roomData[key].hostID === userID) {
-                        valid = false;
-                    }
-
-                    // check if user isn't admin of the room
-                    if (valid) {
-                        const { admins } = roomData[key]
-                        if (admins) {
-                            if (admins.indexOf(userID) !== -1) {
-                                valid = false;
-                            }
-                        }
-                    }
-
-                    if (valid) {
-                        matches.push({ name: roomData[key].roomName, time: roomData[key].currentTime, hostUsername: roomData[key].hostUsername, password: roomData[key].password, id: key })
-                    }
+                if (roomData[key].roomName.includes(name) && isUserNotInRoom(roomData[key].hostID, roomData[key].users, userID)) {
+                    matches.push({
+                        name: roomData[key].roomName,
+                        time: roomData[key].currentTime,
+                        hostUsername: roomData[key].hostUsername,
+                        password: roomData[key].password,
+                        id: key
+                    })
                 }
             }
 
@@ -249,6 +239,24 @@ export const searchRooms = (name, userID) => {
             console.log(err)
         }
     }
+}
+
+// check if user is already in the room (then dont store in matches)
+const isUserNotInRoom = (hostID, users, userID) => {
+    if (hostID === userID) {
+        return false;
+    }
+
+    if (users) {
+        let i;
+        for (i = 0; i < users.length; ++i) {
+            if (users[i].id === userID) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 /**

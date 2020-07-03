@@ -33,8 +33,8 @@ const CreateRoomScreenUI = props => (
                 placeholder={'Password (optional)'}
                 maxLength={30}
                 isPassword={true}
-                value={props.passowordHandler}
-                onChangeText={props.passowordHandler}
+                value={props.passwordHandler}
+                onChangeText={props.passwordHandler}
                 error={props.passError}
             />
             <SpotifyDevice
