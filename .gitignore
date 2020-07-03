@@ -9,9 +9,8 @@ npm-debug.*
 *.orig.*
 web-build/
 web-report/
-misc/secrets.js
-misc/firebase_secrets.js
 constants/firebaseConfig.js
+.env
 
 # macOS
 .DS_Store

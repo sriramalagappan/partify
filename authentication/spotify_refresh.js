@@ -1,11 +1,10 @@
 import { encode as btoa } from 'base-64';
-import credentials from '../misc/secrets'
 import setUserData from '../misc/setUserData'
 import getUserData from '../misc/getUserData'
 import getTokens from './spotify_token'
 import getAuthorizationCode from './spotify_auth';
 
-const refreshTokens = async () => {
+const refreshTokens = async (credentials) => {
   try {
     const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
     const refreshToken = await getUserData('refreshToken');

@@ -28,6 +28,7 @@ import roomReducer from './store/reducers/room'
 import songReducer from './store/reducers/songs'
 import playerReducer from './store/reducers/player'
 import adminReducer from './store/reducers/admin'
+import { proc } from 'react-native-reanimated';
 
 // disable error warnings while in development
 console.disableYellowBox = true;
@@ -51,6 +52,7 @@ const fetchFonts = () => {
     'medium': require('./assets/fonts/medium.ttf'),
   });
 };
+
 
 export default function App() {
   const [fontLoaded, setFontLoaded] = useState(false)

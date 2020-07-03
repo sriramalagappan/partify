@@ -6,6 +6,8 @@ import getTokens from '../../authentication/spotify_token'
 import * as userActions from '../../store/actions/user'
 import * as roomActions from '../../store/actions/room'
 import FirebaseAuth from '../../authentication/firebase_auth'
+import checkTokenFirebase from '../../authentication/firebase_check'
+import getUserData from '../../misc/getUserData'
 
 const AuthScreen = props => {
 
@@ -33,12 +35,20 @@ const AuthScreen = props => {
      * login handler (attempt to login to spotify)
      */
     const loginHandler = async () => {
-        const authCode = await getAuthorizationCode()
+
+        FirebaseAuth.shared = new FirebaseAuth()
+
+        // get spotify credentials first
+        await checkTokenFirebase()
+        const fbToken = await getUserData('fb_accessToken')
+        const response = await fetch(`https://us-central1-partify-58cd0.cloudfunctions.net/message?auth=${fbToken}`)
+        const credentials = await response.json()
+
+        const authCode = await getAuthorizationCode(credentials)
         if (authCode) {
             try {
-                await getTokens(authCode)
+                await getTokens(authCode, credentials)
                 dispatch(userActions.initUser())
-                FirebaseAuth.shared = new FirebaseAuth()
             } catch (err) {
                 console.log(err.message)
             }

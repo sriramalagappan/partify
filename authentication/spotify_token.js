@@ -1,8 +1,7 @@
 import { encode as btoa } from 'base-64';
-import credentials from '../misc/secrets'
 import setUserData from '../misc/setUserData'
 
-const getTokens = async (authCode) => {
+const getTokens = async (authCode, credentials) => {
   try {
     const credsB64 = btoa(`${credentials.clientId}:${credentials.clientSecret}`);
     const response = await fetch('https://accounts.spotify.com/api/token', {

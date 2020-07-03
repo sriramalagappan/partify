@@ -1,13 +1,10 @@
 import * as AuthSession from 'expo-auth-session';
-import credentials from '../misc/secrets'
 import { Alert } from 'react-native'
 
-const scopesArr = ['user-modify-playback-state', 'user-read-currently-playing', 'user-read-playback-state', 'user-library-modify',
-  'user-library-read', 'playlist-read-private', 'playlist-modify-public', 'user-read-private',
-  'playlist-modify-private', 'user-read-recently-played', 'user-top-read'];
+const scopesArr = ['user-modify-playback-state', 'user-read-currently-playing', 'user-read-playback-state', 'playlist-modify-public', 'user-read-private', 'user-read-recently-played'];
 const scopes = scopesArr.join(' ');
 
-const getAuthorizationCode = async () => {
+const getAuthorizationCode = async (credentials) => {
   try {
     const redirectUrl = credentials.redirectUri
     const result = await AuthSession.startAsync({
