@@ -1,4 +1,4 @@
-import { INIT_ROOM, RESET_ROOM, GET_ROOMS, SET_INDEX, SEARCH_ROOMS } from '../actions/room'
+import { INIT_ROOM, RESET_ROOM, GET_ROOMS, SET_INDEX, SEARCH_ROOMS, SYNC, RESET_SYNC } from '../actions/room'
 
 const initialState = {
     roomID: null,
@@ -11,6 +11,10 @@ const initialState = {
     fetchedRooms: false,
     index: 0,
     matches: [],
+    syncData: false,
+    position_ms: 0,
+    duration: 0,
+    is_playing: false,
 }
 
 const roomReducer = (state = initialState, action) => {
@@ -44,6 +48,25 @@ const roomReducer = (state = initialState, action) => {
             return {
                 ...state,
                 index: action.index
+            }
+        }
+        case SYNC: {
+            return {
+                ...state,
+                index: action.index,
+                position_ms: action.position_ms,
+                duration: action.duration,
+                is_playing: action.is_playing,
+                syncData: true,
+            }
+        }
+        case RESET_SYNC: {
+            return {
+                ...state,
+                syncData: false,
+                is_playing: false,
+                duration: 0,
+                position_ms: 0,
             }
         }
         case RESET_ROOM: {

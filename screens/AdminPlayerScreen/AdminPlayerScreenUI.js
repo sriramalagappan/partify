@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, Easing, FlatList } from 'react-native'
+import { View, Text, Easing, FlatList, Modal, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import TextTicker from 'react-native-text-ticker'
 import Song from '../../components/Song'
 import artistBuidler from '../../misc/artistBuilder'
 import AdminPlayer from './AdminPlayer'
+import CustomButton from '../../components/CustomButton'
 
 import styles from './styles'
 
@@ -34,6 +35,41 @@ const AdminPlayerScreenUI = props => {
                     height: 200,
                 }}
             />
+
+            {/* Modal */}
+
+            <Modal
+                visible={props.visible}
+                transparent={true}
+                onRequestClose={props.closeModal}
+                animationType={'fade'}
+            >
+                <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={props.closeModal}>
+                    <View style={styles.modal}>
+                        <View style={styles.modalBody}>
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Recommended Songs"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.submitPasswordHandler}
+                            />
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Members"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.submitPasswordHandler}
+                            />
+                            <CustomButton
+                                style={styles.modalButton}
+                                title={"Home"}
+                                textStyle={styles.modalButtonText}
+                                onPress={props.routeHome}
+                            />
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
+
             <TextTicker
                 style={styles.scrollingText}
                 duration={props.message.length * 300}
@@ -69,6 +105,7 @@ const AdminPlayerScreenUI = props => {
             <View style={styles.div} />
             <AdminPlayer
                 addSongHandler={props.addSongHandler}
+                displayModal={props.displayModal}
             />
         </View>
     )

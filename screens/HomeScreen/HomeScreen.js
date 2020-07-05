@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import * as userActions from '../../store/actions/user'
 import * as roomActions from '../../store/actions/room'
 import * as songActions from '../../store/actions/songs'
+import * as playerActions from '../../store/actions/player'
 import firebase from 'firebase';
 
 const HomeScreen = props => {
@@ -30,6 +31,7 @@ const HomeScreen = props => {
     const userRooms = useSelector(state => state.room.userRooms)
     const level = useSelector(state => state.user.level)
     const matches = useSelector(state => state.room.matches)
+    const device = useSelector(state => state.room.device)
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
@@ -57,6 +59,8 @@ const HomeScreen = props => {
                 // reset name
                 await dispatch(songActions.getPlaylistSongs(playlistID))
                 if (userType === 'host') {
+                    // start silent playback on device
+                    await playerActions.silentPlayback(device.id)
                     props.navigation.navigate('Host')
                 } else if (userType === 'admin') {
                     props.navigation.navigate('Admin')

@@ -101,12 +101,26 @@ export const getPlaylistSongs = (playlistID) => {
  * @param {*} songID Spotify ID of the song to be added
  * @param {*} playlistID Spotify ID of the playlist
  */
-export const addSong = async (songID, playlistID, position) => {
+export const addSong = async (songID, playlistID) => {
     try {
         await checkToken()
         const accessToken = await getUserData('accessToken')
         const auth = 'Bearer ' + accessToken
-        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${songID}&position=${position}`, {
+
+        // get last position to insert
+        const playlistResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+            method: 'GET',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            },
+        });
+
+        const playlistData = await playlistResponse.json()
+
+        const length = (playlistData) ? playlistData.items.length : 0
+
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks?uris=${songID}&position=${length}`, {
             method: 'POST',
             headers: {
                 'Authorization': auth,
@@ -146,5 +160,33 @@ export const deleteSong = (songID, playlistID, index) => {
         } catch (err) {
             console.log(err)
         }
+    }
+}
+
+/**
+ * Get the next song in a playlist from the given index if it exists
+ * @param {*} playlistID Spotify ID of the playlist
+ */
+export const getNextSong = async (playlistID, newIndex) => {
+    try {
+        await checkToken()
+        const accessToken = await getUserData('accessToken')
+        const auth = 'Bearer ' + accessToken
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+            method: 'GET',
+            headers: {
+                'Authorization': auth,
+            },
+        });
+        const resData = await response.json()
+        const playlist = resData.items
+        if (newIndex < playlist.length) {
+            return playlist[newIndex]
+        } else {
+            return null;
+        }
+    } catch (err) {
+        console.log(err)
+        return null;
     }
 }

@@ -7,7 +7,7 @@ import * as roomActions from '../../store/actions/room'
 import * as listener from '../../misc/listener'
 import * as hostActions from '../../store/actions/host'
 import artistBuilder from '../../misc/artistBuilder'
-import { Alert } from 'react-native'
+import { Alert, AppState } from 'react-native'
 
 const HostPlayerScreen = props => {
 
@@ -16,7 +16,6 @@ const HostPlayerScreen = props => {
     const [queueTracks, setQueueTracks] = useState(null)
     const [currentTrack, setCurrentTrack] = useState(null)
     const [nextTrack, setNextTrack] = useState(null)
-    const [length, setLength] = useState(null)
     const [visible, setVisible] = useState(false)
     const [prevDuration, setPrevDuration] = useState(null)
 
@@ -27,9 +26,9 @@ const HostPlayerScreen = props => {
     const deviceID = useSelector(state => state.room.device.id)
     const index = useSelector(state => state.room.index)
     const roomID = useSelector(state => state.room.roomID)
+    const playlistURI = useSelector(state => state.room.uri)
 
     const dispatch = useDispatch()
-
 
     // componentDidMount 
     useEffect(() => {
@@ -57,13 +56,13 @@ const HostPlayerScreen = props => {
 
         // start a timer to send the data to Firebase every minute to let the server know the latest time
         // this room was active
-        const interval = setInterval(() => {
-            hostActions.updateRoomTime(roomID)
+        const interval = setInterval(async () => {
+            await hostActions.updateRoomTime(roomID)
         }, 60000)
 
         // componentWillUnmount
         return () => {
-            // stop interval
+            // stop intervals
             clearInterval(interval)
             // reset room data to default values
             dispatch(roomActions.resetRoom())
@@ -81,9 +80,7 @@ const HostPlayerScreen = props => {
                     setPrevDuration(tracksData[(index - 1)].track.duration_ms)
                 }
             }
-
             // modify tracks by filtering out the previous songs
-            setLength(tracksData.length)
             let i;
             for (i = 0; i < index; i++) {
                 tracksData.shift()
@@ -111,11 +108,45 @@ const HostPlayerScreen = props => {
         }
     }, [tracksData])
 
+    useEffect(() => {
+        // sync this device with Spotify every 30 seconds
+        const syncInterval = setInterval(async () => {
+            await dispatch(roomActions.getCurrentPlayback(currentTrack, tracksData, deviceID, playlistURI, index, roomID))
+            await dispatch(songActions.getPlaylistSongs(playlistID))
+            await hostActions.updateResponse(roomID)
+        }, 30000)
+
+        return () => {
+            clearInterval(syncInterval)
+        }
+    }, [currentTrack, tracksData, deviceID, playlistURI, index, roomID])
+
+    // App state listener
+    useEffect(() => {
+        AppState.addEventListener('change', deviceState)
+
+        return () => {
+            AppState.removeEventListener('change', deviceState)
+        }
+    })
+
+    /**
+     * Sync playback information when user returns to app from background
+     * @param {*} nextState the current state of the app (active or background)
+     */
+    const deviceState = (async (nextState) => {
+        if (nextState === 'active') {
+            await dispatch(roomActions.getCurrentPlayback(currentTrack, tracksData, deviceID, playlistURI, index, roomID))
+            await dispatch(songActions.getPlaylistSongs(playlistID))
+            await hostActions.updateResponse(roomID)
+        }
+    })
+
     /**
      * Route to add song screen if button pressed
      */
     const addSongHandler = () => {
-        props.navigation.navigate({ routeName: 'Add', params: { position: length } })
+        props.navigation.navigate({ routeName: 'Add' })
     }
 
     /**
@@ -143,13 +174,15 @@ const HostPlayerScreen = props => {
             const body = data.val().body
             if (to === 'HOST') {
                 if (type === 'ADD_SONG') {
-                    const { songID, position } = body
+                    // delete message from database once read if request was to host
+                    await hostActions.clearMessage(roomID)
+                    const { songID } = body
                     // add the song to the playlist
                     const formattedID = songID.replace(/:/g, '%3A')
-                    const errResponse = await songActions.addSong(formattedID, playlistID, position)
+                    const errResponse = await songActions.addSong(formattedID, playlistID)
                     // if addition was successful, send a message back indicating that is was successful
                     if (!errResponse) {
-                        dispatch(songActions.getPlaylistSongs(playlistID))
+                        await dispatch(songActions.getPlaylistSongs(playlistID))
                         await hostActions.successResponse(from, roomID)
                     } else {
                         await hostActions.failureResponse(from, 'COULD NOT ADD SONG', roomID)
@@ -157,9 +190,9 @@ const HostPlayerScreen = props => {
                 } else if (type === 'DELETE_SONG') {
                     const { songID, position, playlistID } = body
                     // delete the song from the playlist
-                    dispatch(songActions.deleteSong(songID, playlistID, position))
+                    await dispatch(songActions.deleteSong(songID, playlistID, position))
+                    await dispatch(songActions.getPlaylistSongs(playlistID))
                     await hostActions.updateResponse(roomID)
-                    dispatch(songActions.getPlaylistSongs(playlistID))
                 }
             }
         }

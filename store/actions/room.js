@@ -13,12 +13,21 @@ export const GET_ROOMS = 'GET_ROOMS'
 export const RESET_ROOM = 'RESET_ROOM'
 export const SET_INDEX = 'SET_INDEX'
 export const SEARCH_ROOMS = 'SEARCH_ROOMS'
+export const SYNC = 'SYNC'
+export const RESET_SYNC = 'RESET_SYNC'
 
 /**
  * Removes room information from the state
  */
 export const resetRoom = () => {
     return { type: RESET_ROOM }
+}
+
+/**
+ * Resets sync information
+ */
+export const resetSync = () => {
+    return { type: RESET_SYNC }
 }
 
 /**
@@ -105,7 +114,7 @@ export const joinRoom = (key, userID, name) => {
 
             // add user as member of the room
             const users = (roomData.users) ? roomData.users : []
-            users.push({ id: userID, name, userType: 'member' })
+            users.push({ id: userID, name, userType: 'admin' })
             await fetch(`https://partify-58cd0.firebaseio.com/rooms/${key}.json?auth=${fbToken}`, {
                 method: 'PATCH',
                 headers: {
@@ -300,5 +309,70 @@ export const getIndex = (roomID) => {
             type: SET_INDEX,
             index: newIndex
         })
+    }
+}
+
+export const getCurrentPlayback = (currentTrack, nextTracks, deviceID, playlistURI, oldIndex, roomID) => {
+    return async dispatch => {
+        await checkToken()
+        const spotifyToken = await getUserData('accessToken')
+        const auth = 'Bearer ' + spotifyToken
+        const response = await fetch(`https://api.spotify.com/v1/me/player`, {
+            method: 'GET',
+            headers: {
+                'Authorization': auth,
+                'Content-Type': 'application/json'
+            }
+        });
+        const resData = await response.json()
+        
+        // make sure playback is on the right device and in the playlist, otherwise ignore
+        if (resData.device && resData.device.id === deviceID && resData.context && resData.context.uri === playlistURI) {
+            const playbackURI = resData.item.uri
+            const currentTrackURI = currentTrack.track.uri
+
+            // Check if not synced
+            if (playbackURI != currentTrackURI) {
+                // Find where in playlist we are
+                let i;
+                let found = false;
+                for (i = 0; i < nextTracks.length; ++i) {
+                    if (playbackURI === nextTracks[i].track.uri) {
+                        found = true;
+                        break;
+                    }
+                }
+                // if found update index
+                if (found) {
+                    i += oldIndex + 1;
+
+                    await checkTokenFirebase()
+                    const fbToken = await getUserData('fb_accessToken')
+                    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}.json?auth=${fbToken}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ index: i })
+                    });
+
+                    dispatch({
+                        type: SYNC,
+                        position_ms: resData.progress_ms,
+                        is_playing: resData.is_playing,
+                        duration: resData.item.duration_ms,
+                        index: i,
+                    })
+                }
+            } else {
+                dispatch({
+                    type: SYNC,
+                    position_ms: resData.progress_ms,
+                    is_playing: resData.is_playing,
+                    duration: resData.item.duration_ms,
+                    index: oldIndex,
+                })
+            }
+        }
     }
 }

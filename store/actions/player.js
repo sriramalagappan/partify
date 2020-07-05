@@ -8,7 +8,7 @@ import checkToken from '../../authentication/spotify_check'
 
 export const SET_POSITION = 'SET_POSITION'
 export const RESET_POSITION = 'RESET_POSITION'
-
+export const PAUSE = 'PAUSE'
 
 /**
  * Starts playback on the user's selected device
@@ -91,6 +91,10 @@ export const silentPlayback = async (deviceID) => {
             "uris": ["spotify:track:5WgA26cAKD4kxZ8JAHDvXe"]
         })
     });
+}
+
+export const syncProgress = (position_ms) => {
+    return { type: SET_POSITION, position_ms }
 }
 
 // /**

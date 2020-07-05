@@ -16,7 +16,7 @@ export const CLEAR_REQUEST = 'CLEAR_REQUEST'
  * @param {*} userID The user ID of the person sending the request
  * @param {*} position Position in the playlist to insert the song
  */
-export const sendAddSongRequest = (songID, roomID, userID, position) => {
+export const sendAddSongRequest = (songID, roomID, userID) => {
     return async dispatch => {
         await checkTokenFirebase()
         const fbToken = await getUserData('fb_accessToken')
@@ -25,7 +25,7 @@ export const sendAddSongRequest = (songID, roomID, userID, position) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ from: userID, to: 'HOST', type: 'ADD_SONG', body: { songID, position } })
+            body: JSON.stringify({ from: userID, to: 'HOST', type: 'ADD_SONG', body: { songID } })
         });
 
         dispatch({ type: SENT_REQUEST })

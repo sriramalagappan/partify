@@ -20,10 +20,7 @@ const AddSongScreen = props => {
     const userType = useSelector(state => state.room.userType)
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
-
-    // Navigation-Passed Variables
-    const position = props.navigation.getParam('position')
-
+    
     const dispatch = useDispatch()
 
     // componentDidMount
@@ -66,13 +63,13 @@ const AddSongScreen = props => {
     const addSongHostHandler = async (songID) => {
         // correctly format songID
         const formattedID = songID.replace(/:/g, '%3A')
-        const errResponse = await songActions.addSong(formattedID, playlistID, position)
+        const errResponse = await songActions.addSong(formattedID, playlistID)
         if (!errResponse) {
             // update local version of playlist
             dispatch(songActions.getPlaylistSongs(playlistID))
             // tell other devices in room to update
             await hostActions.updateResponse(roomID)
-            Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
+            Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
         } else {
             Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
         }
@@ -83,7 +80,7 @@ const AddSongScreen = props => {
      * @param {*} songID Spotify song ID
      */
     const addSongAdminHandler = async (songID) => {
-        dispatch(adminActions.sendAddSongRequest(songID, roomID, userID, position))
+        dispatch(adminActions.sendAddSongRequest(songID, roomID, userID))
     }
 
     /**

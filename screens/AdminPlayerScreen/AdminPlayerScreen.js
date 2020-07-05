@@ -15,6 +15,8 @@ const AdminPlayerScreen = props => {
     const [queueTracks, setQueueTracks] = useState(null)
     const [currentTrack, setCurrentTrack] = useState(null)
     const [length, setLength] = useState(null)
+    const [visible, setVisible] = useState(null)
+    const [timeoutID, setTimeoutID] = useState(null)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -23,8 +25,6 @@ const AdminPlayerScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
     const sentRequest = useSelector(state => state.admin.sentRequest)
-
-    let messageTimeout = null;
 
     const dispatch = useDispatch()
 
@@ -81,7 +81,7 @@ const AdminPlayerScreen = props => {
     // time frame, cancel request and let user know
     useEffect(() => {
         if (sentRequest) {
-            messageTimeout = setTimeout(async () => {
+            const messageTimeout = setTimeout(async () => {
                 // check sent request again when script runs in 3 seconds
                 const check = await adminActions.checkRequest(roomID, userID)
                 if (!check) {
@@ -89,6 +89,7 @@ const AdminPlayerScreen = props => {
                     dispatch(adminActions.clearMessage(roomID))
                 }
             }, 3000)
+            setTimeoutID(messageTimeout)
         }
     }, [sentRequest])
 
@@ -103,11 +104,11 @@ const AdminPlayerScreen = props => {
             const type = data.val().type
             const body = data.val().body
             if (to === userID) {
-                clearTimeout(messageTimeout)
+                clearAllTimeout(timeoutID)
                 if (type === 'SUCCESS') {
                     dispatch(songActions.getPlaylistSongs(playlistID))
                     adminActions.updateResponse(roomID, userID)
-                    Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay', onPress: () => { props.navigation.pop() } }])
+                    Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
                 }
@@ -141,6 +142,34 @@ const AdminPlayerScreen = props => {
         dispatch(adminActions.sendDeleteRequest(songID, playlistID, (position + index), userID, roomID))
     }
 
+        /**
+     * Display modal when menu button is pressed
+     */
+    const displayModal = () => {
+        setVisible(true)
+    }
+
+    /**
+     * Close modal
+     */
+    const closeModal = () => {
+        setVisible(false)
+    }
+
+    /**
+     * Route user back to home scree
+     */
+    const routeHome = () => {
+        setVisible(false)
+        props.navigation.pop()
+    }
+
+    const clearAllTimeout = (timeout) => {
+        for (var i = timeout; i > 0; i--) {
+            clearTimeout(i)
+        }
+    }
+
     return (
         <AdminPlayerScreenUI
             addSongHandler={addSongHandler}
@@ -148,6 +177,10 @@ const AdminPlayerScreen = props => {
             queueTracks={queueTracks}
             deleteSongHandler={deleteSongHandler}
             message={message}
+            displayModal={displayModal}
+            closeModal={closeModal}
+            routeHome={routeHome}
+            visible={visible}
         />
     )
 }

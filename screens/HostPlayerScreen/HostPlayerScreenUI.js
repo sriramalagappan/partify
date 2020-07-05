@@ -99,7 +99,7 @@ const HostPlayerScreenUI = props => {
             <Text style={styles.header}>Queue</Text>
             <View style={styles.listContainer}>
                 <FlatList
-                    keyExtractor={(item) => item.track.id + props.queueTracks.indexOf(item)}
+                    keyExtractor={(item) => item.track.id + Math.floor(Math.random() * 1000)}
                     data={props.queueTracks}
                     renderItem={queueTrackRenderer}
                     numColumns={1}

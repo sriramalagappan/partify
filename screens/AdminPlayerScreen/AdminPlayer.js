@@ -16,7 +16,7 @@ const AdminPlayer = props => {
                 </AddButton>
                 <AddButton
                     style={styles.playButton}
-                    onPress={props.addSongHandler}
+                    onPress={props.displayModal}
                 >
                     <Entypo name='menu' size={25} color={'white'} />
                 </AddButton>

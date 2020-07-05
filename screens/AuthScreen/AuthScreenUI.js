@@ -7,7 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const AuthScreenContainer = props => (
     <View style={styles.screen}>
         <LinearGradient
-            colors={['rgba(50,50,50,0.8)', 'transparent']}
+            colors={['rgba(80,80,80,0.8)', 'transparent']}
             style={{
                 position: 'absolute',
                 left: 0,
