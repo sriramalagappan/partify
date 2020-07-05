@@ -7,6 +7,7 @@ import * as roomActions from '../../store/actions/room'
 import * as songActions from '../../store/actions/songs'
 import * as playerActions from '../../store/actions/player'
 import firebase from 'firebase';
+import setUserData from '../../misc/setUserData'
 
 const HomeScreen = props => {
 
@@ -47,8 +48,11 @@ const HomeScreen = props => {
 
         // componentWillUnmount
         return () => {
-            // clear timer
-            clearInterval(interval)
+            console.log("Clearing Interval: ", interval)
+            // clear all timers to ensure timer is closed
+            for (var i = interval; i > 0; --i) {
+                clearInterval(i)
+            }
         }
     }, [])
 
@@ -167,7 +171,7 @@ const HomeScreen = props => {
         dispatch(userActions.logoutUser())
 
         // Delete room data
-        dispatch(roomActions.resetRoom())
+        await dispatch(roomActions.resetRoom())
 
         const user = firebase.auth().currentUser
 
@@ -179,6 +183,9 @@ const HomeScreen = props => {
         }).catch((err) => {
             Alert.alert('An Error Occurred', 'Please try again or restart the app', [{ text: 'Okay' }])
         })
+
+        // save logout parameter on device so login screen is prompted again on next sign in atempt
+        await setUserData('logout', true)
 
         // route to auth
         props.navigation.replace('Auth')
