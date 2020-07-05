@@ -154,7 +154,7 @@ const Player = props => {
                 const currentTime = Date.now()
                 // determine whether to repeat song or to go back to previous song
                 const newIndex = index - 1
-                if ((currentTime - time) < 3000) {
+                if (((currentTime - time) < 3000) || (!props.current)) {
                     await dispatch(roomActions.setIndex(newIndex, roomID))
                     await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex))
                     await hostActions.updateResponse(roomID)
