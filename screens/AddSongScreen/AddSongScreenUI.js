@@ -70,7 +70,7 @@ const AddSongScreenUI = props => {
                     />
                 </View>
                 <CustomButton
-                    title={'Home'}
+                    title={'Back'}
                     style={styles.backButton}
                     onPress={props.backHandler}
                     textStyle={styles.backText}

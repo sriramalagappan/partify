@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Alert } from 'react-native'
 import AuthScreenUI from './AuthScreenUI'
@@ -16,6 +16,9 @@ const AuthScreen = props => {
     const userID = useSelector(state => state.user.userID)
     const fetchedRooms = useSelector(state => state.room.fetchedRooms)
 
+    // Stateful variables
+    const [loading, setLoading] = useState(false)
+
     const dispatch = useDispatch()
 
     // componentDidMount - log into firebase
@@ -29,13 +32,14 @@ const AuthScreen = props => {
         if (fetchedRooms) {
             dispatch(roomActions.resetRoom())
             props.navigation.replace('Home')
+            setLoading(false);
         }
     }, [fetchedRooms])
 
     // fetch rooms
     useEffect(() => {
         if (userID) {
-            dispatch(roomActions.getUserRooms(userID))
+            dispatch(roomActions.getUserRooms(userID, true))
         }
     }, [userID])
 
@@ -43,6 +47,7 @@ const AuthScreen = props => {
      * login handler (attempt to login to spotify)
      */
     const loginHandler = async () => {
+        setLoading(true);
         // get spotify credentials first
         await checkTokenFirebase()
         const fbToken = await getUserData('fb_accessToken')
@@ -61,12 +66,14 @@ const AuthScreen = props => {
             }
         } else {
             Alert.alert('An Error Occurred', 'Please try again', [{ text: 'Okay' }])
+            setLoading(false);
         }
     }
 
     return (
         <AuthScreenUI
             loginHandler={loginHandler}
+            loading={loading}
         />
     )
 }

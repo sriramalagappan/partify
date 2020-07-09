@@ -68,7 +68,7 @@ const Player = props => {
     * @param {*} nextState the current state of the app (active or background)
     */
     const deviceState = (async (nextState) => {
-        if (nextState === 'background') {
+        if (nextState === 'background' || nextState === 'inactive') {
             clearAllTimeout(timeoutID)
         }
     })

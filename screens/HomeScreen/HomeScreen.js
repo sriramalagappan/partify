@@ -43,12 +43,11 @@ const HomeScreen = props => {
 
         // start a timer to update room Data from Firebase every 5 seconds
         const interval = setInterval(() => {
-            dispatch(roomActions.getUserRooms(userID))
+            dispatch(roomActions.getUserRooms(userID, false))
         }, 5000)
 
         // componentWillUnmount
         return () => {
-            console.log("Clearing Interval: ", interval)
             // clear all timers to ensure timer is closed
             for (var i = interval; i > 0; --i) {
                 clearInterval(i)

@@ -24,7 +24,7 @@ const StartupScreen = props => {
     // fetch user rooms
     useEffect(() => {
         if (userID) {
-            dispatch(roomActions.getUserRooms(userID))
+            dispatch(roomActions.getUserRooms(userID, true))
         }
     }, [userID])
 

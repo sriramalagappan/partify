@@ -6,11 +6,11 @@
       "ios",
       "android"
     ],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/partify_logo_v3.png",
+    "icon": "./assets/partify_logo_v4.png",
     "splash": {
-      "image": "./assets/partify_splash.png",
+      "image": "./assets/partify_splash_v2.png",
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },

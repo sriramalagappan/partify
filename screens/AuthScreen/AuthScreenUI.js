@@ -1,8 +1,9 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ActivityIndicator } from 'react-native'
 import CustomButton from '../../components/CustomButton'
 import styles from './styles'
 import { LinearGradient } from 'expo-linear-gradient';
+import colors from '../../constants/Colors'
 
 const AuthScreenContainer = props => (
     <View style={styles.screen}>
@@ -18,11 +19,21 @@ const AuthScreenContainer = props => (
         />
         <Text style={styles.header}>Partify</Text>
         <View style={styles.buttonContainer}>
-            <CustomButton
-                onPress={props.loginHandler}
-                title={"Login to Spotify"}
-                style={styles.button}
-            />
+            {(props.loading) ? 
+                (
+                    <ActivityIndicator 
+                        color={colors.primary}
+                        size="small"
+                    />
+                ) : (
+                    <CustomButton
+                        onPress={props.loginHandler}
+                        title={"Login to Spotify"}
+                        style={styles.button}
+                    />
+                )
+            }
+
         </View>
     </View>
 )

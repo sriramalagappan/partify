@@ -42,6 +42,18 @@ export const updateResponse = async (roomID) => {
     });
 }
 
+export const updateResponseFromCustomer = async (roomID, customer) => {
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ to: 'EVERYONE', from: 'HOST', type: 'UPDATE', body: customer })
+    });
+}
+
 export const updateRoomTime = async (roomID) => {
     const currentTime = Date.now()
     await checkTokenFirebase()

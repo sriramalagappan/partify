@@ -66,7 +66,7 @@ const AddSongScreen = props => {
         const errResponse = await songActions.addSong(formattedID, playlistID)
         if (!errResponse) {
             // update local version of playlist
-            dispatch(songActions.getPlaylistSongs(playlistID))
+            await dispatch(songActions.getPlaylistSongs(playlistID))
             // tell other devices in room to update
             await hostActions.updateResponse(roomID)
             Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
@@ -80,7 +80,7 @@ const AddSongScreen = props => {
      * @param {*} songID Spotify song ID
      */
     const addSongAdminHandler = async (songID) => {
-        dispatch(adminActions.sendAddSongRequest(songID, roomID, userID))
+        await dispatch(adminActions.sendAddSongRequest(songID, roomID, userID))
     }
 
     /**

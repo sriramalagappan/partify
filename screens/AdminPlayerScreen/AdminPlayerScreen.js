@@ -107,7 +107,6 @@ const AdminPlayerScreen = props => {
                 clearAllTimeout(timeoutID)
                 if (type === 'SUCCESS') {
                     dispatch(songActions.getPlaylistSongs(playlistID))
-                    adminActions.updateResponse(roomID, userID)
                     Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
@@ -119,7 +118,13 @@ const AdminPlayerScreen = props => {
                     dispatch(songActions.getPlaylistSongs(playlistID))
                     dispatch(roomActions.getIndex(roomID))
                     // clear body so that the next update request will be heard from the listener
-                    adminActions.clearBody(roomID)
+                    // only if update request was a default update request sent from host
+                    if (body === 'sent') {
+                        adminActions.clearBody(roomID)
+                    } else if (body === userID) {
+                        adminActions.clearBody(roomID)
+                        Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
+                    }
                 }
             }
         }
@@ -142,9 +147,9 @@ const AdminPlayerScreen = props => {
         dispatch(adminActions.sendDeleteRequest(songID, playlistID, (position + index), userID, roomID))
     }
 
-        /**
-     * Display modal when menu button is pressed
-     */
+    /**
+ * Display modal when menu button is pressed
+ */
     const displayModal = () => {
         setVisible(true)
     }

@@ -115,8 +115,8 @@ const HomeScreenUI = props => (
 
                                                     {/* See if room is online */}
 
-                                                    <Text style={((Date.now() - room.time) < 63000) ? styles.roomOnline : styles.roomOffline}>
-                                                        {((Date.now() - room.time) < 63000) ? 'Online' : 'Offline'}
+                                                    <Text style={((Date.now() - room.time) < 43000) ? styles.roomOnline : styles.roomOffline}>
+                                                        {((Date.now() - room.time) < 43000) ? 'Online' : 'Offline'}
                                                     </Text>
                                                 </View>
                                             </View>
@@ -147,8 +147,8 @@ const HomeScreenUI = props => (
 
                                             {/* See if room is online */}
 
-                                            <Text style={((Date.now() - room.time) < 63000) ? styles.roomOnline : styles.roomOffline}>
-                                                {((Date.now() - room.time) < 63000) ? 'Online' : 'Offline'}
+                                            <Text style={((Date.now() - room.time) < 43000) ? styles.roomOnline : styles.roomOffline}>
+                                                {((Date.now() - room.time) < 43000) ? 'Online' : 'Offline'}
                                             </Text>
                                         </View>
                                     </View>

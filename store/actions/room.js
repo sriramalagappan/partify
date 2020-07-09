@@ -172,7 +172,7 @@ export const rejoinRoom = (roomID, userType) => {
  * Get all the rooms the user has currently joined and information about them
  * @param {*} userID Spotify user ID
  */
-export const getUserRooms = (userID) => {
+export const getUserRooms = (userID, shouldUpdate) => {
     return async dispatch => {
         try {
             await checkTokenFirebase()
@@ -208,7 +208,8 @@ export const getUserRooms = (userID) => {
             }
             dispatch({
                 type: GET_ROOMS,
-                userRooms
+                userRooms,
+                shouldUpdate,
             })
         } catch (err) {
             console.log(err)

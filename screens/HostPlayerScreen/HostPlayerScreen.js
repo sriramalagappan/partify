@@ -28,6 +28,8 @@ const HostPlayerScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
     const playlistURI = useSelector(state => state.room.uri)
 
+    let initialized = false;
+
     const dispatch = useDispatch()
 
     // componentDidMount 
@@ -48,22 +50,14 @@ const HostPlayerScreen = props => {
                     listener.startListener(roomID, async (data) => { await processMessage(data) })
 
                     // get playlist songs
-                    dispatch(songActions.getPlaylistSongs(playlistID))
+                    await dispatch(songActions.getPlaylistSongs(playlistID))
                 }
             }
         }
         checkDevice()
 
-        // start a timer to send the data to Firebase every minute to let the server know the latest time
-        // this room was active
-        const interval = setInterval(async () => {
-            await hostActions.updateRoomTime(roomID)
-        }, 60000)
-
         // componentWillUnmount
         return () => {
-            // stop intervals
-            clearInterval(interval)
             // reset room data to default values
             dispatch(roomActions.resetRoom())
             // stop listener when leaving the room
@@ -114,6 +108,7 @@ const HostPlayerScreen = props => {
             await dispatch(roomActions.getCurrentPlayback(currentTrack, tracksData, deviceID, playlistURI, index, roomID))
             await dispatch(songActions.getPlaylistSongs(playlistID))
             await hostActions.updateResponse(roomID)
+            await hostActions.updateRoomTime(roomID)
         }, 30000)
 
         return () => {
@@ -157,7 +152,7 @@ const HostPlayerScreen = props => {
     const deleteSongHandler = async (songID, position) => {
         await dispatch(songActions.deleteSong(songID, playlistID, (position + index)))
         await hostActions.updateResponse(roomID)
-        dispatch(songActions.getPlaylistSongs(playlistID))
+        await dispatch(songActions.getPlaylistSongs(playlistID))
         return;
     }
 
@@ -167,11 +162,11 @@ const HostPlayerScreen = props => {
      */
     const processMessage = async (data) => {
         if (data && data.val()) {
-            console.log('Message Recieved')
             const to = data.val().to
             const from = data.val().from
             const type = data.val().type
             const body = data.val().body
+
             if (to === 'HOST') {
                 if (type === 'ADD_SONG') {
                     // delete message from database once read if request was to host
@@ -183,7 +178,7 @@ const HostPlayerScreen = props => {
                     // if addition was successful, send a message back indicating that is was successful
                     if (!errResponse) {
                         await dispatch(songActions.getPlaylistSongs(playlistID))
-                        await hostActions.successResponse(from, roomID)
+                        await hostActions.updateResponseFromCustomer(roomID, from)
                     } else {
                         await hostActions.failureResponse(from, 'COULD NOT ADD SONG', roomID)
                     }

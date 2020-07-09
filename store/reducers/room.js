@@ -35,7 +35,7 @@ const roomReducer = (state = initialState, action) => {
             return {
                 ...state,
                 userRooms: action.userRooms,
-                fetchedRooms: true,
+                fetchedRooms: action.shouldUpdate,
             }
         }
         case SEARCH_ROOMS: {
