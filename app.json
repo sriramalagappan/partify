@@ -27,7 +27,8 @@
     },
     "android": {
       "package": "com.sriramalagappan.partify",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": []
     },
     "scheme": "partify"
   }
