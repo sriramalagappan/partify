@@ -97,7 +97,7 @@ const AdminPlayerScreen = props => {
      * Function that takes new messages from Firebase and determines what action to take based on that message
      * @param {*} data contents of the message
      */
-    const responseHandler = (data) => {
+    const responseHandler = async (data) => {
         if (data && data.val()) {
             const to = data.val().to
             const from = data.val().from
@@ -106,23 +106,22 @@ const AdminPlayerScreen = props => {
             if (to === userID) {
                 clearAllTimeout(timeoutID)
                 if (type === 'SUCCESS') {
-                    dispatch(songActions.getPlaylistSongs(playlistID))
+                    await dispatch(songActions.getPlaylistSongs(playlistID))
                     Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
                 }
                 // clear message 
-                dispatch(adminActions.clearMessage(roomID))
+                await dispatch(adminActions.clearMessage(roomID))
             } else if (to === 'EVERYONE') {
                 if (type === 'UPDATE' && from !== userID) {
-                    dispatch(songActions.getPlaylistSongs(playlistID))
-                    dispatch(roomActions.getIndex(roomID))
+                    await dispatch(songActions.getPlaylistSongs(playlistID))
+                    await dispatch(roomActions.getIndex(roomID))
                     // clear body so that the next update request will be heard from the listener
-                    // only if update request was a default update request sent from host
                     if (body === 'sent') {
-                        adminActions.clearBody(roomID)
+                        await adminActions.clearBody(roomID)
                     } else if (body === userID) {
-                        adminActions.clearBody(roomID)
+                        await adminActions.clearBody(roomID)
                         Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                     }
                 }

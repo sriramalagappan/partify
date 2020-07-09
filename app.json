@@ -6,9 +6,9 @@
       "ios",
       "android"
     ],
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
-    "icon": "./assets/partify_logo_v4.png",
+    "icon": "./assets/partify_logo_v5.png",
     "splash": {
       "image": "./assets/partify_splash_v2.png",
       "resizeMode": "cover",
@@ -23,7 +23,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.sriramalagappan.partify",
-      "buildNumber": "1.0.2"
+      "buildNumber": "1.0.3"
     },
     "android": {
       "package": "com.sriramalagappan.partify",
