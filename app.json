@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "partify",
-    "slug": "partify",
+    "name": "Partify",
+    "slug": "Partify",
     "platforms": [
       "ios",
       "android"
@@ -23,7 +23,8 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.sriramalagappan.partify",
-      "buildNumber": "1.0.0"
+      "buildNumber": "1.0.0",
+      "icon": "./assets/partify_logo_v2.png"
     },
     "android": {
       "package": "com.sriramalagappan.partify",
