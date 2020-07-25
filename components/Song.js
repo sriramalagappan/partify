@@ -89,8 +89,6 @@ const styles = StyleSheet.create({
     image: {
         width: 60,
         height: 60,
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 5,
     },
 
     column: {
@@ -129,7 +127,8 @@ const styles = StyleSheet.create({
         height: 60,
         backgroundColor: 'red',
         flexDirection: 'row',
-        borderRadius: 5,
+        borderTopRightRadius: 5,
+        borderBottomRightRadius: 5,
         alignItems: 'center',
         justifyContent: 'flex-end',
         marginTop: 5,
@@ -145,8 +144,6 @@ const styles = StyleSheet.create({
     blankImage: {
         width: 60,
         height: 60,
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 5,
         alignItems: 'center',
         justifyContent: 'center',
     },

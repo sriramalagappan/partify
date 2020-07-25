@@ -47,7 +47,7 @@ const AdminPlayerScreenUI = props => {
                 <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={props.closeModal}>
                     <View style={styles.modal}>
                         <View style={styles.modalBody}>
-                            <CustomButton
+                            {/* <CustomButton
                                 style={styles.modalButton}
                                 title={"Recommended Songs"}
                                 textStyle={styles.modalButtonText}
@@ -58,7 +58,7 @@ const AdminPlayerScreenUI = props => {
                                 title={"Members"}
                                 textStyle={styles.modalButtonText}
                                 onPress={props.submitPasswordHandler}
-                            />
+                            /> */}
                             <CustomButton
                                 style={styles.modalButton}
                                 title={"Home"}
