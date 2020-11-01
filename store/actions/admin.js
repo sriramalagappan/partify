@@ -8,6 +8,24 @@ import getUserData from '../../misc/getUserData'
 
 export const SENT_REQUEST = 'SENT_REQUEST'
 export const CLEAR_REQUEST = 'CLEAR_REQUEST'
+export const GET_CUR_PLAYBACK = 'GET_CUR_PLAYBACK'
+
+/**
+ * Send a message to the host phone asking for the current playback state (to sync)
+ * @param {*} roomID Firebase ID of the room to post the request to
+ * @param {*} userID the user ID of the person sending the request
+ */
+export const getCurPlayback = async (roomID, userID, currentTrack) => {
+    await checkTokenFirebase()
+    const fbToken = await getUserData('fb_accessToken')
+    await fetch(`https://partify-58cd0.firebaseio.com/rooms/${roomID}/message.json?auth=${fbToken}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ to: 'HOST', from: userID, type: 'GET_CUR_PLAYBACK', body: currentTrack })
+    });
+}
 
 /**
  * Send a message to the host phone through Firebase asking to add the given song

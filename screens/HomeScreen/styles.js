@@ -192,7 +192,6 @@ export default StyleSheet.create({
         fontSize: 20,
         marginTop: 10,
         textAlign: 'center',
-        marginBottom: 5,
         color: '#a8a8a8'
     },
 
@@ -203,6 +202,12 @@ export default StyleSheet.create({
     },
 
     modalInput: {
-        borderColor: '#a8a8a8'
+        borderColor: '#a8a8a8',
+        width: '100%'
+    },
+
+    modalPasswordHolder: {
+        width: '100%',
+        alignItems: 'center',
     }
 })

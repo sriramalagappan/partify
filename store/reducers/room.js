@@ -9,12 +9,14 @@ const initialState = {
     userType: '',
     userRooms: [],
     fetchedRooms: false,
-    index: 0,
+    index: -1,
     matches: [],
     syncData: false,
     position_ms: 0,
     duration: 0,
     is_playing: false,
+    userDevice: null,
+    playbackURI: null,
 }
 
 const roomReducer = (state = initialState, action) => {
@@ -28,7 +30,8 @@ const roomReducer = (state = initialState, action) => {
                 uri: action.uri,
                 playlistID: action.playlistID,
                 userType: action.userType,
-                index: action.index
+                index: action.index,
+                userDevice: action.userDevice
             }
         }
         case GET_ROOMS: {
@@ -57,6 +60,7 @@ const roomReducer = (state = initialState, action) => {
                 position_ms: action.position_ms,
                 duration: action.duration,
                 is_playing: action.is_playing,
+                playbackURI: action.playbackURI,
                 syncData: true,
             }
         }
@@ -67,6 +71,7 @@ const roomReducer = (state = initialState, action) => {
                 is_playing: false,
                 duration: 0,
                 position_ms: 0,
+                playbackURI: null,
             }
         }
         case RESET_ROOM: {

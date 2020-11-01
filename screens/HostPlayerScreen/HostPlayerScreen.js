@@ -27,6 +27,9 @@ const HostPlayerScreen = props => {
     const index = useSelector(state => state.room.index)
     const roomID = useSelector(state => state.room.roomID)
     const playlistURI = useSelector(state => state.room.uri)
+    const is_playing = useSelector(state => state.room.is_playing)
+    const position_ms = useSelector(state => state.room.position_ms)
+    const playbackURI = useSelector(state => state.room.playbackURI)
 
     let initialized = false;
 
@@ -188,6 +191,9 @@ const HostPlayerScreen = props => {
                     await dispatch(songActions.deleteSong(songID, playlistID, position))
                     await dispatch(songActions.getPlaylistSongs(playlistID))
                     await hostActions.updateResponse(roomID)
+                } else if (type === 'GET_CUR_PLAYBACK') {
+                    // create message to send in the body
+                    await hostActions.sendCurPlayback(from, roomID, body)
                 }
             }
         }

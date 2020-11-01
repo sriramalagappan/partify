@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text, Keyboard, TouchableWithoutFeedback, ScrollView, Platform, TouchableOpacity, RefreshControl, ActivityIndicator, Modal, TextInput } from 'react-native'
+import { View, StyleSheet, Text, Keyboard, TouchableWithoutFeedback, ScrollView, Platform, TouchableOpacity, RefreshControl, ActivityIndicator, Modal, TextInput } from 'react-native'
 import styles from './styles'
 import CustomButton from '../../components/CustomButton'
+import SpotifyDevice from '../../components/SpotifyDevice'
 import Input from '../../components/Input'
 import { SearchBar } from 'react-native-elements'
 import { LinearGradient } from 'expo-linear-gradient';
@@ -32,7 +33,7 @@ const HomeScreenUI = props => (
                         right: 0,
                     }}
                 >
-                    {(props.refreshing)  ?
+                    {(props.refreshing) ?
                         (
                             <View style={styles.refreshIndicator}>
                                 <ActivityIndicator size='large' color='black' />
@@ -69,19 +70,34 @@ const HomeScreenUI = props => (
                 <TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={props.closeHandler}>
                     <View style={styles.modal}>
                         <View style={styles.modalBody}>
-                            <Text style={styles.modalTitle}>Enter the Room's Password</Text>
-                            <Input 
-                                value={props.password}
-                                onChangeText={props.passwordHandler}
-                                maxLength={30}
-                                isPassword={true}
-                                style={styles.modalInput}
-                            />
-                            <CustomButton 
+                            {(props.isRejoin) ? (
+                                <View style={styles.modalPasswordHolder}>
+                                    <Text style={styles.modalTitle}>Select a Device</Text>
+                                    <SpotifyDevice
+                                        devices={props.devices}
+                                        onPressIcon={props.refreshDeviceHandler}
+                                        onPress={(input) => { props.deviceHandler(input) }}
+                                        selectedDevice={props.userDevice}
+                                        isLoading={false}
+                                        backgroundColor={"#111111"}
+                                    />
+                                </View>) : (
+                                    <View style={styles.modalPasswordHolder}>
+                                        <Text style={styles.modalTitle}>Enter the Room's Password</Text>
+                                        <Input
+                                            value={props.password}
+                                            onChangeText={props.passwordHandler}
+                                            maxLength={30}
+                                            isPassword={true}
+                                            style={styles.modalInput}
+                                        />
+                                    </View>
+                                )}
+                            <CustomButton
                                 style={styles.modalButton}
                                 title={"Submit"}
                                 textStyle={styles.modalButtonText}
-                                onPress={props.submitPasswordHandler}
+                                onPress={(props.isRejoin) ? props.rejoinRoom : props.submitPasswordHandler}
                             />
                         </View>
                     </View>

@@ -76,7 +76,7 @@ const Player = props => {
     // timer functionality + play / pause Spotify playback functionality
     const toggleTimer = async () => {
         if (isActive) {
-            await dispatch(playerActions.pausePlayback(deviceID))
+            await dispatch(playerActions.pausePlayback(deviceID, roomID))
             clearAllTimeout(timeoutID)
             setIsActive(false)
         } else {
@@ -86,7 +86,7 @@ const Player = props => {
             } else if (!props.current) {
                 Alert.alert('No Song to Play', 'Please add a song before attempting to play by clicking the plus button below and selecting a song.', [{ text: 'Okay' }])
             } else {
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, position_ms, index, roomID))
                 const songTimeout = setTimeout(() => { songEndHandler(index, songTimeout) }, (props.duration - position_ms))
                 setTimeoutID(songTimeout)
                 setIsActive(true)
@@ -104,7 +104,7 @@ const Player = props => {
             const songTimeout = setTimeout(() => { songEndHandler(newIndex, songTimeout) }, (nextSong.track.duration_ms))
             setTimeoutID(songTimeout)
         } else {
-            await dispatch(playerActions.pausePlayback(deviceID))
+            await dispatch(playerActions.pausePlayback(deviceID, roomID))
             setIsActive(false)
         }
         // use sync funtion to reset position_ms back to 0
@@ -125,7 +125,7 @@ const Player = props => {
             } else {
                 const newIndex = index + 1
                 await dispatch(roomActions.setIndex(newIndex, roomID))
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex, roomID))
                 await hostActions.updateResponse(roomID)
                 await dispatch(songActions.getPlaylistSongs(playlistID))
                 clearAllTimeout(timeoutID)
@@ -156,7 +156,7 @@ const Player = props => {
                 const newIndex = index - 1
                 if (((currentTime - time) < 3000) || (!props.current)) {
                     await dispatch(roomActions.setIndex(newIndex, roomID))
-                    await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex))
+                    await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, newIndex, roomID))
                     await hostActions.updateResponse(roomID)
                     await dispatch(songActions.getPlaylistSongs(playlistID))
                     setIsActive(true)
@@ -164,15 +164,15 @@ const Player = props => {
                     const songTimeout = setTimeout(() => { songEndHandler(newIndex, songTimeout) }, (props.prevDuration))
                     setTimeoutID(songTimeout)
                 } else {
-                    await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, index))
+                    await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, index, roomID))
                     const songTimeout = setTimeout(() => { songEndHandler(newIndex, songTimeout) }, (props.duration))
                     setTimeoutID(songTimeout)
                 }
                 // update time
                 setTime(currentTime)
             } else {
-                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, 0))
-                await dispatch(playerActions.pausePlayback(deviceID))
+                await dispatch(playerActions.startPlayback(deviceID, playlistURI, 0, 0, roomID))
+                await dispatch(playerActions.pausePlayback(deviceID, roomID))
                 setIsActive(false)
             }
         }

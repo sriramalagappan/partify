@@ -101,6 +101,7 @@ export const initRoom = (roomName, password, device, userID, displayName) => {
  * Join a room for the first time
  * @param {*} key Firebase key of the room to join
  * @param {*} userID Spotify user ID of the person joining
+ * @param {*} userDevice The user's playback device
  */
 export const joinRoom = (key, userID, name) => {
     return async dispatch => {
@@ -123,7 +124,6 @@ export const joinRoom = (key, userID, name) => {
                 body: JSON.stringify({ users })
             });
 
-
             dispatch({
                 type: INIT_ROOM,
                 roomName,
@@ -145,7 +145,7 @@ export const joinRoom = (key, userID, name) => {
  * @param {*} roomID Firebase ID of the room to join
  * @param {*} userType The elevated status of the user (member, admin, host)
  */
-export const rejoinRoom = (roomID, userType) => {
+export const rejoinRoom = (roomID, userType, userDevice) => {
     return async dispatch => {
         await checkTokenFirebase()
         const fbToken = await getUserData('fb_accessToken')
@@ -163,6 +163,7 @@ export const rejoinRoom = (roomID, userType) => {
             playlistID,
             userType,
             index,
+            userDevice,
         })
 
     }
@@ -362,6 +363,7 @@ export const getCurrentPlayback = (currentTrack, nextTracks, deviceID, playlistU
                         position_ms: resData.progress_ms,
                         is_playing: resData.is_playing,
                         duration: resData.item.duration_ms,
+                        playbackURI,
                         index: i,
                     })
                 }
@@ -371,6 +373,7 @@ export const getCurrentPlayback = (currentTrack, nextTracks, deviceID, playlistU
                     position_ms: resData.progress_ms,
                     is_playing: resData.is_playing,
                     duration: resData.item.duration_ms,
+                    playbackURI,
                     index: oldIndex,
                 })
             }

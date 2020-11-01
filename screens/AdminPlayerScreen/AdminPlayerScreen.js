@@ -4,6 +4,7 @@ import AdminPlayerScreenUI from './AdminPlayerScreenUI'
 import * as songActions from '../../store/actions/songs'
 import * as roomActions from '../../store/actions/room'
 import * as adminActions from '../../store/actions/admin'
+import * as playerActions from '../../store/actions/player'
 import artistBuilder from '../../misc/artistBuilder'
 import * as listener from '../../misc/listener'
 import { Alert } from 'react-native'
@@ -17,6 +18,7 @@ const AdminPlayerScreen = props => {
     const [length, setLength] = useState(null)
     const [visible, setVisible] = useState(null)
     const [timeoutID, setTimeoutID] = useState(null)
+    const [request, setRequest] = useState(true)
 
     // Redux Store State Variables
     const playlistID = useSelector(state => state.room.playlistID)
@@ -25,6 +27,7 @@ const AdminPlayerScreen = props => {
     const roomID = useSelector(state => state.room.roomID)
     const userID = useSelector(state => state.user.userID)
     const sentRequest = useSelector(state => state.admin.sentRequest)
+    const device = useSelector(state => state.room.userDevice)
 
     const dispatch = useDispatch()
 
@@ -38,6 +41,15 @@ const AdminPlayerScreen = props => {
             dispatch(roomActions.resetRoom())
         }
     }, [])
+
+    // componentDidMount only when index is loaded
+    useEffect(() => {
+        if (!(index === -1) && request) {
+            // get the current playback from host
+            adminActions.getCurPlayback(roomID, userID, index)
+            setRequest(false)
+        }
+    }, [index])
 
     // update/filter track data
     useEffect(() => {
@@ -110,6 +122,13 @@ const AdminPlayerScreen = props => {
                     Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                 } else if (type === 'ERROR' && body === 'COULD NOT ADD SONG') {
                     Alert.alert('Error Adding Song', 'We were unable to add your selected song to the queue. Please try again', [{ text: 'Okay' }])
+                } else if (type === 'CUR_PLAYBACK') {
+                    const { playbackURI, is_playing, position_ms, index } = body
+                    //console.log(body)
+                    if (is_playing) {
+                        //await playerActions.startPlaybackAdmin(device, playbackURI, position_ms)
+                        await dispatch(playerActions.startPlaybackAdmin(device.id, playbackURI, position_ms, index))
+                    }
                 }
                 // clear message 
                 await dispatch(adminActions.clearMessage(roomID))
@@ -124,6 +143,11 @@ const AdminPlayerScreen = props => {
                         await adminActions.clearBody(roomID)
                         Alert.alert('Song Added', 'Your song was added to the queue!', [{ text: 'Okay' }])
                     }
+                } else if (type === 'CUR_PLAYBACK') {
+                    const { playbackURI, is_playing, position_ms, index } = body
+                    await dispatch(playerActions.startPlaybackAdmin(device.id, playbackURI, position_ms, index))
+                } else if (type === 'PAUSE') {
+                    await playerActions.pausePlaybackAdmin(device.id)
                 }
             }
         }

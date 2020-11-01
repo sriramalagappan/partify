@@ -57,9 +57,9 @@ const SpotifyDevice = props => {
     }
 
     return (
-        <View style={styles.border}>
+        <View style={{...styles.border, backgroundColor: props.backgroundColor}}>
             <View style={styles.row}>
-                <Text style={styles.header}>Available Spotify Devices</Text>
+                <Text style={styles.header}>Your Devices</Text>
                 <Icon style={styles.icon} onPress={props.onPressIcon}>
                     <EvilIcons name='refresh' size={30} color={colors.primary} />
                 </Icon>

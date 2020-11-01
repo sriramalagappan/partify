@@ -6,6 +6,7 @@ import * as userActions from '../../store/actions/user'
 import * as roomActions from '../../store/actions/room'
 import * as songActions from '../../store/actions/songs'
 import * as playerActions from '../../store/actions/player'
+import * as deviceActions from '../../store/actions/devices'
 import firebase from 'firebase';
 import setUserData from '../../misc/setUserData'
 
@@ -22,6 +23,9 @@ const HomeScreen = props => {
     const [password, setPassword] = useState('')
     const [roomPassword, setRoomPassword] = useState('')
     const [roomKey, setRoomKey] = useState('')
+    const [userDevice, setUserDevice] = useState(null)
+    const [isRejoin, setIsRejoin] = useState(false)
+    const [uType, setUType] = useState(null)
 
     // Redux Store State Variables
     const displayName = useSelector(state => state.user.displayName)
@@ -33,13 +37,23 @@ const HomeScreen = props => {
     const level = useSelector(state => state.user.level)
     const matches = useSelector(state => state.room.matches)
     const device = useSelector(state => state.room.device)
+    let devices = useSelector(state => state.devices.devices)
+
+    // falsey check for devices
+    if (devices == false) {
+        devices = null
+    }
 
     // save dispatch function in variable to use in hooks
     const dispatch = useDispatch()
 
     // componentDidMount
     useEffect(() => {
+        // reset previous room information to null if it exists
         dispatch(roomActions.resetRoom())
+
+        // get all the current active Spotify devices
+        dispatch(deviceActions.getDevices())
 
         // start a timer to update room Data from Firebase every 5 seconds
         const interval = setInterval(() => {
@@ -73,6 +87,26 @@ const HomeScreen = props => {
         }
         joinedRoom()
     }, [roomID, userType, playlistID])
+
+    /**
+     * update device when available device is selected
+     * @param {*} index location of the device in the array of devices
+     */
+    const deviceHandler = index => {
+        // if device is already checked, uncheck it 
+        if (userDevice && userDevice.id === devices[index].id) {
+            setUserDevice(null)
+        } else {
+            setUserDevice(devices[index])
+        }
+    }
+
+    /**
+     * get active Spotify devices again when refresh button in modal is clicked
+     */
+    const refreshDeviceHandler = async () => {
+        await dispatch(deviceActions.getDevices())
+    }
 
     /**
      * search through Firebase for room names that match the given input 
@@ -122,6 +156,7 @@ const HomeScreen = props => {
      * @param {*} key Firebase ID of the room
      */
     const joinRoomHandler = (password, key) => {
+        setIsRejoin(false)
         // display modal for password if password is required
         if (password) {
             setRoomPassword(password)
@@ -142,17 +177,39 @@ const HomeScreen = props => {
      * @param roomID Firebase ID of the room
      * @param userType a string (user level in the room the user is joining)
      */
-    const toggleRejoinRoom = useCallback((roomID, userType) => {
-        dispatch(roomActions.rejoinRoom(roomID, userType))
+    const toggleRejoinRoom = useCallback((roomID, userType, userDevice) => {
+        dispatch(roomActions.rejoinRoom(roomID, userType, userDevice))
     })
 
     /**
-     * Attempt to rejoin a room
+     * Rejoin a room
+     */
+    const rejoinRoom = () => {
+        if (!userDevice) {
+            Alert.alert('No Device Selected', 'Please select a device', [{ text: 'Okay' }])
+            return;
+        }
+        setVisible(false);
+        toggleRejoinRoom(roomKey, uType, userDevice);
+    }
+
+    /**
+     * Open modal to rejoin a room
      * @param {*} roomID Firebase ID of the room
      * @param {*} userType a string (user level in the room the user is joining)
      */
-    const rejoinRoomHandler = (roomID, userType) => {
-        toggleRejoinRoom(roomID, userType)
+    const rejoinRoomHandler = (roomID, userType, time) => {
+        if (userType === 'host') {
+            toggleRejoinRoom(roomID, userType);
+        }
+        else if ((Date.now() - time) > 43000) {
+            Alert.alert('Room is offline', 'Please wait for the host to join the room', [{ text: 'Okay' }])
+        } else {
+            setRoomKey(roomID)
+            setUType(userType)
+            setIsRejoin(true)
+            setVisible(true)
+        }
     }
 
     /**
@@ -217,6 +274,7 @@ const HomeScreen = props => {
      */
     const closeHandler = () => {
         setVisible(false)
+        setIsRejoin(false)
         setPassword('')
     }
 
@@ -255,6 +313,12 @@ const HomeScreen = props => {
             password={password}
             passwordHandler={passwordHandler}
             submitPasswordHandler={submitPasswordHandler}
+            devices={devices}
+            refreshDeviceHandler={refreshDeviceHandler}
+            deviceHandler={deviceHandler}
+            userDevice={userDevice}
+            isRejoin={isRejoin}
+            rejoinRoom={rejoinRoom}
         />
     )
 }
