@@ -17,7 +17,7 @@
     "expo-auth-session": "~1.2.1",
     "expo-linear-gradient": "~8.1.0",
     "expo-web-browser": "~8.2.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "firebase": "^8.0.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
